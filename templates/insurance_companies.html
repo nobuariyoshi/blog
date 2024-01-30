@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Nobu Ariyoshi{% endblock %}
+
+{% block content %}
+    <!-- Page Header -->
+    <header class="masthead colored-section">
+        <h1>旅行保険会社一覧</h1>
+    </header>
+
+    <!-- Main Content -->
+    <main class="mb-4 white-section">
+      <table class="table">
+        {% for insurance_company in insurance_companies %}
+        <tr>
+            <td>{{ insurance_company.company }}</td>
+            <td>{{ insurance_company.premium }}</td>
+            <td>{{ insurance_company.medical_expenses }}</td>
+            <td>{{ insurance_company.disease_death }}</td>
+            <td>{{ insurance_company.age_condition }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+        <a class="btn btn-warning btn-lg download-button" href="{{ url_for('home') }}">ホームに戻る</a>
+    </main>
+
+{% endblock %}

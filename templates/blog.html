@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Blog - Nobu Ariyoshi{% endblock %}
+
+{% block content %}
+
+    <header class="masthead colored-section">
+        <h1 class="header-title">ブログ</h1>
+    </header>
+
+    <!-- Post Previews -->
+    <main class="mb-4 white-section">
+          <div class="container px-4 px-lg-5">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+      <div class="col-md-10 col-lg-8 col-xl-7">
+        {% for post in all_posts %}
+            <div class="post-preview" style="background-image: url('{{ post.image_url }}'); background-size: cover;">
+                <div class="post-heading">
+                    <a href="{{ url_for('show_post', index=post.id) }}" style="text-decoration: none; color: inherit;">
+                        <h2 class="post-title">{{ post.title }}</h2>
+                        <h3 class="post-subtitle">{{ post.subtitle }}</h3>
+                    </a>
+                    <p class="post-meta">Posted by
+                        <a href="#">{{ post.author }}</a>
+                        on {{ post.date }}</p>
+                </div>
+            </div>
+            <hr>
+        {% endfor %}
+
+        <!-- Pager -->
+        <div class="clearfix">
+            <a class="btn btn-warning float-right" href="#">Older Posts &rarr;</a>
+        </div>
+                </div>
+    </div>
+  </div>
+    </main>
+
+{% endblock %}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Flask-Bootstrap CSS -->
+    {{ bootstrap.load_css() }}
+
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/d0b4319ec0.js" crossorigin="anonymous"></script>
+
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" />
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Nobuhiro Ariyoshi is a physician based in Hawaii. He is the founder of Aicurea." />
+    <meta name="keywords" content="AI Healthcare, Telehealth, Personalized Care, Medical Consultation, Health Monitoring" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather&family=Montserrat&family=Sacramento&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Noto+Sans+JP:wght@400;700;900&family=Ubuntu&display=swap" rel="stylesheet">
+
+    <title>{% block title %}Nobu Ariyoshi{% endblock %}</title>
+
+    {% block head %}{% endblock %} <!-- Additional head elements can be added here -->
+</head>
+<body>
+    {% include "header.html" %}  <!-- Including the header -->
+
+    {% block content %}{% endblock %}  <!-- Main content will be inserted here -->
+
+    {% include "footer.html" %}  <!-- Including the footer -->
+
+    <!-- Flask-Bootstrap JavaScript -->
+    {{ bootstrap.load_js() }}
+
+    {% block scripts %}{% endblock %}  <!-- Additional scripts can be added here -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

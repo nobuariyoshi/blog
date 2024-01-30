@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% from 'bootstrap5/form.html' import render_form %}
+
+{% block title %}Add A New Travel Insurance Company{% endblock %}
+
+{% block content %}
+    <!-- Page Header -->
+    <header class="masthead colored-section">
+        <h1>旅行保険会社の追加</h1>
+    </header>
+
+    <!-- Main Content -->
+    <main class="mb-4 white-section">
+          <div class="container px-4 px-lg-5">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+      <div class="col-md-10 col-lg-8 col-xl-7">
+        <form id="insuranceForm" action="{{ url_for('add_insurance_company') }}" method="post">
+            {{ form.hidden_tag() }}
+
+            <div class="form-floating mb-3">
+                {{ form.company(class="form-control", id="company", placeholder="保険会社 (Insurance Company)") }}
+                {{ form.company.label(class="form-label", for="company") }}
+            </div>
+            <div class="form-floating mb-3">
+                {{ form.premium(class="form-control", id="premium", placeholder="保険料 (Insurance Premium)") }}
+                {{ form.premium.label(class="form-label", for="premium") }}
+            </div>
+            <div class="form-floating mb-3">
+                {{ form.medical_expenses(class="form-control", id="medical_expenses", placeholder="治療費用 (Medical Expenses)") }}
+                {{ form.medical_expenses.label(class="form-label", for="medical_expenses") }}
+            </div>
+            <div class="form-floating mb-3">
+                {{ form.disease_death(class="form-control", id="disease_death", placeholder="疾病死亡 (Disease Death)") }}
+                {{ form.disease_death.label(class="form-label", for="disease_death") }}
+            </div>
+            <div class="form-floating mb-3">
+                {{ form.age_condition(class="form-control", id="age_condition", placeholder="年齢条件 (Age Condition)") }}
+                {{ form.age_condition.label(class="form-label", for="age_condition") }}
+            </div>
+            <button type="submit" class="btn btn-warning">Submit</button>
+        </form>
+
+
+        <p class="space-above">
+            <br>
+        <a class="btn btn-dark btn-lg download-button" href="{{ url_for('insurance_companies') }}">全ての保険会社を見る</a> <!-- "See all insurance companies" in Japanese -->
+        </p>
+                </div>
+    </div>
+    </div>
+    </main>
+
+{% endblock %}

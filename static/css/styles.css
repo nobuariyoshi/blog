@@ -1,0 +1,170 @@
+/* Base Element Styles */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+a{
+  font-family: "Noto Sans JP", sans-serif;
+}
+
+a {
+  color: white;
+    font-size: 2.5rem;
+        text-decoration: none;
+}
+
+a:hover {
+  color: yellow;
+}
+
+.colored-section {
+  background-color: #0f4c75;
+  color: #fff;
+  text-align: center;
+    padding: 7% 15%;
+}
+
+.white-section {
+  background-color: #fff;
+    text-align: center;
+    padding: 7% 15%;
+}
+
+/* Navigation Bar */
+.navbar {
+    background-color: #0f4c75;
+      color: #fff;
+      text-align: center;
+}
+
+.dropdown-menu {
+    background-color: #0f4c75;
+      color: white;
+      text-align: center;
+    border-color: white
+}
+
+.dropdown-item {
+    background-color: #0f4c75;
+        font-size: 1rem;
+      color: white;
+      text-align: center;
+}
+
+/*Title*/
+.signature {
+  color: #fff;
+  font-family: "Sacramento", sans-serif;
+  font-size: 5.625rem;
+  line-height: 1.5;
+}
+
+.physician {
+  color: #fff;
+  font-family: "Montserrat", sans-serif;
+  font-size: 2.5rem;
+  line-height: 1.5;
+}
+
+.hawaii {
+  width: 80%;
+}
+
+/*Profile*/
+.greeting {
+    color: black;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 700; /* Bold */
+  font-size: 3.5rem;
+  line-height: 1.5;
+}
+
+.myphoto {
+  width: 30%;
+}
+
+.intro {
+    color: black;
+      font-family: "Montserrat", sans-serif;
+    font-size: 1.5rem;
+    line-height: 1.5;
+}
+
+/*Blog*/
+#blog {
+    text-align: left;
+}
+
+.blog-body-container {
+    background-color: #fff;
+    color: #000;
+    padding: 5% 15%;
+}
+
+.header-title {
+        font-weight: 700; /* Bold */
+  font-size: 2.5rem;
+  line-height: 1.5;
+}
+
+.post-title {
+    font-family: "Montserrat", sans-serif;
+        font-weight: 700; /* Bold */
+  font-size: 2.5rem;
+  line-height: 1.5;
+}
+
+.post-subtitle {
+      font-family: "Montserrat", sans-serif;
+  font-size: 1.5rem;
+  line-height: 1.5;
+}
+
+.clearfix {
+text-align: right;
+}
+
+
+
+/*Contact*/
+.alert {
+  color: yellow;
+  background-color: #0f4c75;
+  border-color: #0f4c75;
+  text-align: center;
+    font-size: 3rem;
+  padding: 2%;
+}
+.contact-me {
+      font-weight: 700; /* Bold */
+    line-height: 1.5;
+  font-size: 2rem;
+    padding: 2%;
+}
+
+.contact-message {
+          color: black;
+      font-weight: 700; /* Bold */
+      line-height: 1.5;
+  font-size: 1rem;
+        padding: 2%;
+}
+
+/*Footer*/
+.copyright {
+  color: white;
+  font-size: 0.75rem;
+}
+
+.fab {
+  color: black;
+}
+
+.footer-section {
+  background-color: #0f4c75;
+  color: #fff;
+  text-align: center;
+    padding: 5% 15%;
+}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% from 'bootstrap5/form.html' import render_form %}
+
+{% block title %}Add a New Hospital{% endblock %}
+
+{% block content %}
+    <!-- Page Header -->
+    <header class="masthead colored-section">
+        <h1>新しい病院を追加</h1> <!-- "Add a New Hospital" in Japanese -->
+    </header>
+
+    <!-- Main Content -->
+    <main class="mb-4 white-section">
+        <div class="container px-4 px-lg-5">
+            <div class="row gx-4 gx-lg-5 justify-content-center">
+                <div class="col-md-10 col-lg-8 col-xl-7">
+                    <form id="hospitalForm" action="{{ url_for('add_hospital') }}" method="post">
+                        {{ form.hidden_tag() }}
+
+                        <div class="form-floating mb-3">
+                            {{ form.name(class="form-control", id="name", placeholder="病院名 (Hospital Name)") }}
+                            {{ form.name.label(class="form-label", for="name") }}
+                        </div>
+                        <div class="form-floating mb-3">
+                            {{ form.address(class="form-control", id="address", placeholder="住所 (Address)") }}
+                            {{ form.address.label(class="form-label", for="address") }}
+                        </div>
+                        <div class="form-floating mb-3">
+                            {{ form.phone(class="form-control", id="phone", placeholder="電話番号 (Phone Number)") }}
+                            {{ form.phone.label(class="form-label", for="phone") }}
+                        </div>
+                        <div class="form-floating mb-3">
+                            {{ form.url(class="form-control", id="url", placeholder="ウェブサイト URL (Website URL)") }}
+                            {{ form.url.label(class="form-label", for="url") }}
+                        </div>
+                        <div class="form-floating mb-3">
+                            {{ form.description(class="form-control", id="description", placeholder="説明 (Description)") }}
+                            {{ form.description.label(class="form-label", for="description") }}
+                        </div>
+                        <button type="submit" class="btn btn-warning">Submit</button>
+                    </form>
+
+                    <p class="space-above">
+                        <br>
+                        <a class="btn btn-dark btn-lg download-button" href="{{ url_for('hospital') }}">全ての病院を見る</a> <!-- "See all hospitals" in Japanese -->
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
