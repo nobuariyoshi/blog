@@ -1,49 +1,47 @@
 {% extends "base.html" %}
 
-{% block title %}Contact Me - Nobu Ariyoshi{% endblock %}
+{% block title %}お問い合わせ - Nobu Ariyoshi{% endblock %}
 
 {% block content %}
 
 <header class="masthead colored-section">
-      <h1>Contact Me</h1>
+      <h1>お問い合わせ</h1>
 </header>
-
-
 
 <main class="mb-4 white-section">
   <div class="container px-4 px-lg-5">
     <div class="row gx-4 gx-lg-5 justify-content-center">
       <div class="col-md-10 col-lg-8 col-xl-7">
-        <p>Want to get in touch? Fill out the form below to send me a message and I will get back to you as soon as possible!</p>
+        <p>ご連絡を希望されますか？下記のフォームにご記入の上、メッセージをお送りください。可能な限り早急にご返答いたします！</p>
         <div class="my-5">
-          <!-- Start of contact form -->
-          <form id="contactForm" action="{{ url_for('contact') }}" method="post">
-            {{ form.hidden_tag() }}
+          <!-- お問い合わせフォームの開始 -->
+        <form id="contactForm" action="{{ url_for('contact') }}" method="post">
+          {{ form.hidden_tag() }}
 
-            <div class="form-floating mb-3">
-              {{ form.name(class="form-control", id="name", placeholder="Enter your name...") }}
-              {{ form.name.label(class="form-label", for="name") }}
-            </div>
-            <div class="form-floating mb-3">
-              {{ form.email(class="form-control", id="email", placeholder="Enter your email...") }}
-              {{ form.email.label(class="form-label", for="email") }}
-            </div>
-            <div class="form-floating mb-3">
-              {{ form.phone(class="form-control", id="phone", placeholder="Enter your phone number...") }}
-              {{ form.phone.label(class="form-label", for="phone") }}
-            </div>
-            <div class="form-floating mb-3">
-              {{ form.message(class="form-control", id="message", placeholder="Enter your message here...", style="height: 12rem") }}
-              {{ form.message.label(class="form-label", for="message") }}
-            </div>
-            <button type="submit" class="btn btn-orange">Submit</button>
-          </form>
-          <!-- End of contact form -->
+          <div class="form-floating mb-3">
+            {{ form.name(class="form-control", id="name", placeholder="お名前を入力してください...") }}
+            <label for="name" class="form-label">お名前</label>
+          </div>
+          <div class="form-floating mb-3">
+            {{ form.email(class="form-control", id="email", placeholder="メールアドレスを入力してください...") }}
+            <label for="email" class="form-label">メールアドレス</label>
+          </div>
+          <div class="form-floating mb-3">
+            {{ form.phone(class="form-control", id="phone", placeholder="電話番号を入力してください...") }}
+            <label for="phone" class="form-label">電話番号</label>
+          </div>
+          <div class="form-floating mb-3">
+            {{ form.message(class="form-control", id="message", placeholder="こちらにメッセージを入力してください...", style="height: 12rem") }}
+            <label for="message" class="form-label">メッセージ</label>
+          </div>
+          <button type="submit" class="btn btn-orange">送信</button>
+        </form>
+
+          <!-- お問い合わせフォームの終了 -->
         </div>
       </div>
     </div>
   </div>
 </main>
-
 
 {% endblock %}

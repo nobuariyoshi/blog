@@ -2,27 +2,28 @@
 
 {% from "bootstrap5/form.html" import render_form %}
 
-{% block title %}{{ post.title }} - Nobu Ariyoshi{% endblock %}
+{% block title %}{{ post_data.post.title }} - aicurea{% endblock %}
 
 {% block content %}
 
   <!-- Page Header -->
-  <header class="masthead colored-section" style="background-image: url('{{post.image_url}}')">
+  <header class="masthead colored-section" style="background-image: url('{{ post_data.post.img_url }}')">
     <div class="overlay"></div>
     <div>
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
           <div class="post-heading">
-            <h1 class="post-title">{{post.title}}</h1>
-            <h2 class="post-subtitle">{{post.subtitle}}</h2>
+            <h1 class="post-title">{{ post_data.post.title }}</h1>
+            <h2 class="post-subtitle">{{ post_data.post.subtitle }}</h2>
             <span class="meta">Posted by
-              <a href="#">{{current_user.first_name}} {{current_user.last_name}}</a>
-              on {{post.date}}</span>
+              <a href="#">{{ post_data.author_first_name }} {{ post_data.author_last_name }}</a>
+              on {{ post_data.post.date }}</span>
           </div>
         </div>
       </div>
     </div>
   </header>
+
 
   <!-- Post Content -->
   <article>
@@ -30,7 +31,7 @@
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
           <p>
-            {{post.body}}
+            {{post_data.post.body}}
           </p>
 
           <!-- Edit Button -->
@@ -41,7 +42,7 @@
           {% endif %}
 
 
-                  <!-- Comments Area -->
+        <!-- Comments Area -->
         <!-- Load the CKEditor -->
         {{ ckeditor.load() }}
         <!-- Configure it with the name of the form field from CommentForm -->

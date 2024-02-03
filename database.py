@@ -36,6 +36,8 @@ class User(UserMixin, db.Model):
     created_at = Column(DateTime, default=datetime.utcnow)
     # Add a relationship to BlogPost
     posts = relationship('BlogPost', backref='author', lazy=True)
+    # Add a relationship to Comment
+    comments = relationship('Comment', backref='author', lazy=True)
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -103,4 +105,15 @@ class BlogPost(db.Model):
     # Change 'author' to 'author_id' to reference the User's id
     author_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)  # Add ForeignKey to reference User
     img_url = db.Column(db.String(500), nullable=False)
+    # Add a relationship to Comment
+    comments = relationship('Comment', backref='post', lazy=True)
+
+
+class Comment(db.Model):
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(Text, nullable=False)
+    date_posted = db.Column(DateTime, default=datetime.utcnow, nullable=False)
+    author_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)  # Add ForeignKey to reference User
+    post_id = db.Column(db.Integer, ForeignKey('blog_posts.id'), nullable=False)  # Add ForeignKey to reference BlogPost
 

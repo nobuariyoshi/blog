@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Login Successful{% endblock %}
+{% block title %}ログイン成功{% endblock %}
 {% block content %}
     <header class="masthead colored-section">
-        <h1 class="header-title">You are logged in</h1>
-        <!-- Button to go to the Home page -->
-        <a href="{{ url_for('home') }}" class="btn btn-orange">Home</a>
-        <!-- Button to go to the Download page -->
-        <a href="{{ url_for('secrets') }}" class="btn btn-secondary">Secret</a>
+        <h1 class="header-title">ログインしました</h1>
+        <!-- ホームページへのボタン -->
+        <a href="{{ url_for('home') }}" class="btn btn-orange">ホーム</a>
+        <!-- ダウンロードページへのボタン -->
+        <a href="{{ url_for('secrets') }}" class="btn btn-secondary">シークレットファイル</a>
     </header>
 {% endblock %}
+

@@ -59,5 +59,5 @@ class CreatePostForm(FlaskForm):
 
 class CommentForm(FlaskForm):
     comment_text = CKEditorField("Comment", validators=[DataRequired()])
-    submit = SubmitField("Submit Comment")
+    submit = SubmitField("コメントを投稿する")
 

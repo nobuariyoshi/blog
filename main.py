@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, send_from_directory, abort
 from flask_bootstrap import Bootstrap5
 from functools import wraps
-import datetime
+from datetime import datetime
 import os
 import smtplib
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -9,7 +9,7 @@ from form import ContactForm, RegisterForm, LoginForm, TravelInsuranceForm, Hosp
 from dotenv import load_dotenv, find_dotenv
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_ckeditor import CKEditor, CKEditorField
-from database import User, Contact, TravelInsurance, Hospital, db, DATABASE_URL, BlogPost  # Importing from database.py
+from database import User, Contact, TravelInsurance, Hospital, db, DATABASE_URL, BlogPost, Comment  # Importing from database.py
 from flask_migrate import Migrate
 
 # Load environment variables
@@ -34,6 +34,7 @@ MY_EMAIL_PASSWORD = os.environ["GOOGLE_APP_PASSWORD"]
 # Initialize Flask-Migrate
 migrate = Migrate(app, db)
 
+
 def send_email(name, email, phone, message):
     email_message = f"Subject:New Message\n\nName: {name}\nEmail: {email}\nPhone: {phone}\nMessage:{message}"
     with smtplib.SMTP("smtp.gmail.com") as connection:
@@ -57,30 +58,66 @@ def admin_only(f):
 
 @app.context_processor
 def inject_user():
-    return dict(logged_in=current_user.is_authenticated)
+    year = datetime.now().year  # Get the current year
+    return dict(logged_in=current_user.is_authenticated, year=year)
 
 
 @app.route("/")
 def home():
-    year = datetime.datetime.now().year
     latest_posts = BlogPost.query.order_by(BlogPost.id.desc()).limit(3).all()  # Fetch the 3 latest posts
-    return render_template("index.html", year=year, latest_posts=latest_posts)
+    return render_template("index.html", latest_posts=latest_posts)
 
 
 # <-------------------------------BLOG------------------------------------>
 
 @app.route("/blog/")
 def get_blog():
-    posts = BlogPost.query.all()  # Fetch all blog posts from the database
-    return render_template("blog.html", all_posts=posts)
+    # Fetch all blog posts from the database along with their authors
+    posts_with_authors = db.session.query(BlogPost, User.first_name, User.last_name).join(User,
+                                                                                          BlogPost.author_id == User.id).all()
+    # Prepare posts data including author names for the template
+    posts_data = [{
+        'post': post,
+        'author_first_name': first_name,
+        'author_last_name': last_name
+    } for post, first_name, last_name in posts_with_authors]
+    return render_template("blog.html", all_posts=posts_data)
 
 
-@app.route("/post/<int:post_id>")
+@app.route("/post/<int:post_id>", methods=['GET', 'POST'])
 def show_post(post_id):
-    requested_post = db.get_or_404(BlogPost, post_id)
-    # Add the CommentForm to the route
+    # Fetch the requested blog post from the database along with the author's details
+    post_with_author = db.session.query(BlogPost, User.first_name, User.last_name).join(User,
+                                                                                        BlogPost.author_id == User.id).filter(
+        BlogPost.id == post_id).first()
+    if not post_with_author:
+        return "Post not found", 404
+    # Unpack the post and author details
+    post, author_first_name, author_last_name = post_with_author
+    # Create a CommentForm instance
     comment_form = CommentForm()
-    return render_template("post.html", post=requested_post, current_user=current_user, form=comment_form)
+
+    if comment_form.validate_on_submit():
+        # Create a new Comment object and save it to the database
+        new_comment = Comment(
+            text=comment_form.comment_text.data,
+            author_id=current_user.id,  # Assuming you have a current user
+            post_id=post.id
+        )
+        db.session.add(new_comment)
+        db.session.commit()
+
+    # Fetch comments associated with the blog post
+    comments = Comment.query.filter_by(post_id=post.id).all()
+
+    # Prepare post and author data for the template
+    post_data = {
+        'post': post,
+        'author_first_name': author_first_name,
+        'author_last_name': author_last_name
+    }
+
+    return render_template("post.html", post=post, post_data=post_data, form=comment_form, comments=comments)
 
 
 @app.route("/new-post", methods=["GET", "POST"])
@@ -103,10 +140,8 @@ def add_new_post():
         except Exception as e:
             db.session.rollback()  # Rollback the session to a clean state
             print(f"Error adding new post: {e}")
-            flash("An error occurred while adding the post. Please try again.")
+            flash("投稿の追加中にエラーが発生しました。もう一度お試しください。")
     return render_template("make-post.html", form=form)
-
-
 
 
 @app.route("/edit-post/<int:post_id>", methods=["GET", "POST"])
@@ -134,7 +169,7 @@ def edit_post(post_id):
             return redirect(url_for("show_post", post_id=post.id))
         except Exception as e:
             print(f"Error editing post: {e}")
-            flash("An error occurred while editing the post. Please try again.")
+            flash("投稿の修正中にエラーが発生しました。もう一度お試しください。")
 
     return render_template("make-post.html", form=edit_form, is_edit=True)
 
@@ -149,7 +184,7 @@ def delete_post(post_id):
         return redirect(url_for('get_blog'))
     except Exception as e:
         print(f"Error deleting post: {e}")
-        flash("An error occurred while deleting the post. Please try again.")
+        flash("投稿の削除中にエラーが発生しました。もう一度お試しください。")
         return redirect(url_for('get_blog'))
 
 
@@ -195,7 +230,7 @@ def contact():
         db.session.add(new_contact)
         db.session.commit()
 
-        flash('Successfully sent your message!')
+        flash('メッセージを送信しました！')
         send_email(form.name.data, form.email.data, form.phone.data, form.message.data)
         return redirect(url_for('contact'))
 
@@ -213,14 +248,14 @@ def load_user(user_id):
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        flash("You are already logged in. No need to register again.")
+        flash("既にログインしています。")
         return redirect(url_for('logged_in'))  # Or any other appropriate route
     form = RegisterForm()
     if form.validate_on_submit():
         existing_user = User.query.filter(
             (User.email == form.email.data) | (User.username == form.username.data)).first()
         if existing_user:
-            flash('A user already exists with that email or username.')
+            flash('そのメールアドレスまたはユーザー名のユーザーは既に存在します。')
             return redirect(url_for('login'))
 
         # Create a new User instance with first name and last name
@@ -233,7 +268,7 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Registration successful!')
+        flash('登録が成功しました！')
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
@@ -242,7 +277,7 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
-        flash("You are already logged in.")
+        flash("既にログインしています。")
         return redirect(url_for('logged_in'))  # Redirects to a page indicating the user is logged in
     form = LoginForm()
     if form.validate_on_submit():
@@ -252,7 +287,7 @@ def login():
             login_user(user, remember=form.remember.data)
             return redirect(url_for('logged_in'))  # Or any other appropriate route after login
         else:
-            flash('Invalid username or password')
+            flash('ユーザー名またはパスワードが無効です')
     return render_template('login.html', form=form)
 
 
@@ -390,4 +425,4 @@ def get_hospital_at_location():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    app.run(debug=False)

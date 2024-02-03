@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Login - Nobu Ariyoshi{% endblock %}
+{% block title %}ログイン - 信夫有義{% endblock %}
 
 {% block content %}
 
@@ -13,7 +13,7 @@
                     </div>
                 {% endfor %}
             {% else %}
-                <h1 class="header-title">ログイン</h1> <!-- Login -->
+                <h1 class="header-title">ログイン</h1>
             {% endif %}
         {% endwith %}
     </header>
@@ -23,15 +23,15 @@
     <div class="row gx-4 gx-lg-5 justify-content-center">
       <div class="col-md-10 col-lg-8 col-xl-7">
 
-        <p>Please enter your username and password to login.</p>
+        <p>ユーザーネームとパスワードを入力してください。</p>
         <div class="my-5">
-          <!-- Start of login form -->
+          <!-- ログインフォームの開始 -->
           <form id="myForm" action="{{ url_for('login') }}" method="post">
-            {{ form.hidden_tag() }} <!-- CSRF token -->
-            <!-- Username Field -->
+            {{ form.hidden_tag() }} <!-- CSRFトークン -->
+            <!-- ユーザーネームフィールド -->
             <div class="form-floating mb-3">
-              {{ form.username(class="form-control", id="username", placeholder="Enter your username...") }}
-              <label for="username">Username</label>
+              {{ form.username(class="form-control", id="username", placeholder="ユーザーネームを入力...") }}
+              <label for="username">ユーザーネーム</label>
               {% if form.username.errors %}
                 {% for error in form.username.errors %}
                   <div class="invalid-feedback" style="display:block;">
@@ -41,10 +41,10 @@
               {% endif %}
             </div>
 
-            <!-- Password Field -->
+            <!-- パスワードフィールド -->
             <div class="form-floating mb-3">
-              {{ form.password(class="form-control", id="password", placeholder="Enter your password...") }}
-              <label for="password">Password</label>
+              {{ form.password(class="form-control", id="password", placeholder="パスワードを入力...") }}
+              <label for="password">パスワード</label>
               {% if form.password.errors %}
                 {% for error in form.password.errors %}
                   <div class="invalid-feedback" style="display:block;">
@@ -54,9 +54,9 @@
               {% endif %}
             </div>
 
-            <button type="submit" class="btn btn-orange">Login</button>
+            <button type="submit" class="btn btn-orange">ログイン</button>
           </form>
-          <!-- End of login form -->
+          <!-- ログインフォームの終了 -->
         </div>
       </div>
     </div>

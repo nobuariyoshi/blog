@@ -1,17 +1,20 @@
 {% extends "base.html" %}
 
-{% block title %}Nobu Ariyoshi{% endblock %}
+{% block title %}aicurea{% endblock %}
 
 {% block content %}
     <section class="colored-section" id="title">
         <div class="container-fluid">
             <!-- Title -->
             <div>
-                <h1 class="signature">Aicurea</h1>
-                <img class="hawaii" src="{{ url_for('static', filename='images/hawaii.png') }}" alt="mountain-image" />
+                <h1 class="main-title">安全な旅を、もっと身近に</h1>
+                <br>
+                <p class="home-main-subtitle">アイキュリアは、旅行中の不安を解消します</p>
+                <img class="hawaii" src="{{ url_for('static', filename='images/hawaii.png') }}" alt="Hawaii Scenery" />
             </div>
         </div>
     </section>
+
 
     <section class="white-section" id="contact">
         <div>
