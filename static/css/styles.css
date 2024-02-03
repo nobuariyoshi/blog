@@ -9,6 +9,9 @@ a{
   font-family: "Noto Sans JP", sans-serif;
 }
 
+
+/* a variations */
+
 a {
   color: white;
     font-size: 2.5rem;
@@ -16,8 +19,33 @@ a {
 }
 
 a:hover {
+  color: orange;
+}
+
+.meta a{
+    color: orange;
+    font-size: 1rem;
+}
+
+.meta a:hover {
   color: yellow;
 }
+
+.post-meta a,
+.download{
+      color: #0f4c75;
+        font-size: 1rem;
+}
+
+.post-meta a:hover,
+.download:hover{
+  color: orange;
+}
+
+
+
+
+/* Base Element Styles */
 
 .colored-section {
   background-color: #0f4c75;
@@ -31,6 +59,20 @@ a:hover {
     text-align: center;
     padding: 7% 15%;
 }
+
+/*Buttons*/
+.btn-orange {
+    background-color: orange;
+    border-color: orange;
+    color: black;
+}
+
+.btn-orange:hover {
+    background-color: darkorange;
+    border-color: darkorange;
+}
+
+
 
 /* Navigation Bar */
 .navbar {
@@ -77,7 +119,8 @@ a:hover {
     color: black;
     font-family: "Montserrat", sans-serif;
     font-weight: 700; /* Bold */
-  font-size: 3.5rem;
+    padding: 2%;
+  font-size: 1.5rem;
   line-height: 1.5;
 }
 
@@ -95,6 +138,10 @@ a:hover {
 /*Blog*/
 #blog {
     text-align: left;
+}
+
+.new-post-section {
+    padding: 5%;
 }
 
 .blog-body-container {
@@ -168,3 +215,5 @@ text-align: right;
   text-align: center;
     padding: 5% 15%;
 }
+
+/*About*/

@@ -18,6 +18,32 @@
           <form id="registrationForm" action="{{ url_for('register') }}" method="post">
             {{ form.hidden_tag() }} <!-- CSRF token -->
 
+                        <!-- First Name Field -->
+            <div class="form-floating mb-3">
+              {{ form.first_name(class="form-control", id="firstName", placeholder="Enter your first name...") }}
+              <label for="firstName">First Name</label>
+              {% if form.first_name.errors %}
+                {% for error in form.first_name.errors %}
+                  <div class="invalid-feedback" style="display:block;">
+                    {{ error }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            </div>
+
+            <!-- Last Name Field -->
+            <div class="form-floating mb-3">
+              {{ form.last_name(class="form-control", id="lastName", placeholder="Enter your last name...") }}
+              <label for="lastName">Last Name</label>
+              {% if form.last_name.errors %}
+                {% for error in form.last_name.errors %}
+                  <div class="invalid-feedback" style="display:block;">
+                    {{ error }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            </div>
+
             <!-- Username Field -->
             <div class="form-floating mb-3">
               {{ form.username(class="form-control", id="username", placeholder="Enter your username...") }}
@@ -69,7 +95,7 @@
                 {% endfor %}
               {% endif %}
             </div>
-            <button type="submit" class="btn btn-warning">Register</button>
+            <button type="submit" class="btn btn-orange">Register</button>
           </form>
           <!-- End of registration form -->
         </div>

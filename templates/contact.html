@@ -5,17 +5,7 @@
 {% block content %}
 
 <header class="masthead colored-section">
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      {% for message in messages %}
-        <div class="alert alert-success">
-          {{ message }}
-        </div>
-      {% endfor %}
-    {% else %}
       <h1>Contact Me</h1>
-    {% endif %}
-  {% endwith %}
 </header>
 
 
@@ -46,7 +36,7 @@
               {{ form.message(class="form-control", id="message", placeholder="Enter your message here...", style="height: 12rem") }}
               {{ form.message.label(class="form-label", for="message") }}
             </div>
-            <button type="submit" class="btn btn-warning">Submit</button>
+            <button type="submit" class="btn btn-orange">Submit</button>
           </form>
           <!-- End of contact form -->
         </div>

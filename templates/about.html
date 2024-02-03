@@ -1,24 +1,45 @@
 {% extends "base.html" %}
 
-{% block title %}About Me - Nobu Ariyoshi{% endblock %}
+{% block title %}About Us{% endblock %}
 
 {% block content %}
 
     <!-- Page Header -->
     <header class="masthead colored-section">
-        <h1>About Me</h1>
-        <span class="subheading">This is what I do.</span>
+        <h1>About Us</h1>
     </header>
 
-    <!-- Main Content -->
-    <main class="mb-4 white-section">
-          <div class="container px-4 px-lg-5">
-    <div class="row gx-4 gx-lg-5 justify-content-center">
-      <div class="col-md-10 col-lg-8 col-xl-7">
-        <p>Your actual content about your experiences, skills, etc.</p>
-              </div>
-    </div>
-  </div>
-    </main>
+    <section class="white-section" id="profile">
+        <section>
+            <div class="container-fluid">
+                <div class="profile-row"> <!-- Changed class name for clarity -->
+                    <div class="profile">
+                        <!-- Wrap the div in a hyperlink -->
+                        <a href="{{ url_for('about_nobu') }}">
+                            <img class="myphoto" src="{{ url_for('static', filename='images/my-photo.png') }}" alt="Nobuhiro Ariyoshi profile picture" />
+                            <h2 class="greeting">Nobuhiro Ariyoshi, MD</h2>
+                            <p class="intro">Co-founder</p>
+                        </a>
+                    </div>
+                    <div class="profile">
+                        <!-- Wrap the div in a hyperlink -->
+                        <a href="{{ url_for('about_takenobu') }}">
+                            <img class="myphoto" src="{{ url_for('static', filename='images/takenobu_picture.png') }}" alt="Takenobu Shimura profile picture" />
+                            <h2 class="greeting">Takenobu Shimura</h2>
+                            <p class="intro">Co-founder</p>
+                        </a>
+                    </div>
+                    <div class="profile">
+                        <!-- Wrap the div in a hyperlink -->
+                        <a href="{{ url_for('about_aoi') }}">
+                            <img class="myphoto" src="{{ url_for('static', filename='images/aoi_picture.png') }}" alt="Aoi Otani profile picture" />
+                            <h2 class="greeting">Aoi Otani</h2>
+                            <p class="intro">Co-founder</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
 
 {% endblock %}

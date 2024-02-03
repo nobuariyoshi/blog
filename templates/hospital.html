@@ -22,7 +22,13 @@
             </div>
         {% endfor %}
       </table>
-        <a class="btn btn-warning btn-lg download-button" href="{{ url_for('home') }}">ホームに戻る</a>
+        <a class="btn btn-orange btn-lg download-button" href="{{ url_for('home') }}">ホームに戻る</a>
+
+        {% if current_user.id == 1 %}
+        <div class="d-flex justify-content-end mb-4">
+            <a class="btn btn-primary" href="{{url_for('add_hospital')}}">Add Hospital</a>
+        </div>
+        {% endif %}
     </main>
 
 {% endblock %}

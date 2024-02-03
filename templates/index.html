@@ -7,59 +7,8 @@
         <div class="container-fluid">
             <!-- Title -->
             <div>
-                <h1 class="signature">I'm Nobu.</h1>
-                <h2>a <span class="physician">physician.</span></h2>
+                <h1 class="signature">Aicurea</h1>
                 <img class="hawaii" src="{{ url_for('static', filename='images/hawaii.png') }}" alt="mountain-image" />
-            </div>
-        </div>
-    </section>
-
-    <section class="white-section" id="profile">
-        <div class="container-fluid">
-            <div class="profile">
-                <img
-                    class="myphoto"
-                    src="{{ url_for('static', filename='images/my-photo.png') }}"
-                    alt="nobuhiro profile picture"
-                />
-                <h2 class="greeting">Hello.</h2>
-                <p class="intro">
-                    Founder of Aicurea. I am a physician based in Hawaii.
-                </p>
-                <p class="intro">
-                    I love 🏌🏻 and hiking.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <section class="colored-section" id="blog">
-        <!-- Main Content -->
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-md-10 mx-auto">
-                    {% for post in all_posts %}
-                        <div class="post-preview">
-                            <a href="{{ url_for('show_post', index=post.id) }}">
-                                <h2 class="post-title">
-                                    {{ post.title }}
-                                </h2>
-                                <h3 class="post-subtitle">
-                                    {{ post.subtitle }}
-                                </h3>
-                            </a>
-                            <p class="post-meta">Posted by
-                                <a href="#">{{ post.author }}</a>
-                                on {{ post.date }}
-                            </p>
-                        </div>
-                        <hr>
-                    {% endfor %}
-                    <!-- Pager -->
-                    <div class="clearfix">
-                        <a class="btn btn-warning float-right" href="#">Older Posts &rarr;</a>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
@@ -70,7 +19,7 @@
             <p class="contact-message">
                 AIとヘルスケアに関する話題、または日常のちょっとしたことでも、お気軽にメッセージを送ってください。皆さんからのメッセージを楽しみにしています！
             </p>
-            <a class="btn btn-warning btn-lg download-button" href="{{ url_for('contact') }}">メッセージを送る</a>
+            <a class="btn btn-orange btn-lg download-button" href="{{ url_for('contact') }}">メッセージを送る</a>
         </div>
     </section>
 {% endblock %}
