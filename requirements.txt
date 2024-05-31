@@ -244,7 +244,6 @@ notebook==6.5.4
 notebook_shim==0.2.2
 numba==0.57.1
 numexpr==2.8.4
-numpy==1.23.5
 O365==2.0.33
 oauthlib==3.2.2
 olefile==0.46
