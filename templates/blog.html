@@ -1,54 +1,56 @@
 {% extends "base.html" %}
 
-{% block title %}Blog{% endblock %}
+{% block title %}Blog - SlimTechMD{% endblock %}
 
-{% block content %}
-
-    <header class="masthead colored-section">
-        <h1 class="header-title">ブログ</h1>
-    </header>
-
-    <!-- Post Previews -->
-    <main class="mb-4 white-section">
-        <div class="container px-4 px-lg-5">
-            <div class="row gx-4 gx-lg-5 justify-content-center">
-                <div class="col-md-10 col-lg-8 col-xl-7">
-                    {% for post_data in all_posts %}
-                        <div class="post-preview" style="background-image: url('{{ post_data.post.img_url }}'); background-size: cover;">
-                            <div class="post-heading">
-                                <a href="{{ url_for('show_post', post_id=post_data.post.id) }}" style="text-decoration: none; color: inherit;">
-                                    <h2 class="post-title">{{ post_data.post.title }}</h2>
-                                    <h3 class="post-subtitle">{{ post_data.post.subtitle }}</h3>
-                                </a>
-                                <p class="post-meta">Posted by
-                                    <a href="#">{{ post_data.author_first_name }} {{ post_data.author_last_name }}</a>
-                                    on {{ post_data.post.date }}
-                                    {% if current_user.id == 1 %}
-                                    <a href="{{url_for('delete_post', post_id=post_data.post.id) }}">✘</a>
-                                    {% endif %}
-                                </p>
-                            </div>
-                        </div>
-                        <hr>
-                    {% endfor %}
-
-
-                    <div class="clearfix">
-                        <a class="btn btn-orange float-right" href="#">もっと見る &rarr;</a>
-                    </div>
-
-
-                    <br>
-                    <!-- New Post Button -->
-                    <!-- Only show delete button if user id is 1 (admin user) -->
-                    {% if current_user.id == 1 %}
-                    <div class="d-flex justify-content-end mb-4">
-                        <a class="btn btn-primary" href="{{url_for('add_new_post')}}">Create New Post</a>
-                    </div>
-                    {% endif %}
+{% block header %}
+<header class="masthead" style="background-image: url('{{ url_for('static', filename='images/post-sample-image.jpg') }}')">
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <div class="page-heading">
+                    <h1 class="header-title">ブログ</h1>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
+</header>
+{% endblock %}
 
+{% block content %}
+<div class="container px-4 px-lg-5">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xl-7">
+            <!-- Post preview-->
+            {% for item in all_posts %}
+            <div class="post-preview">
+                <a href="{{ url_for('show_post', post_id=item.post.id) }}">
+                    <h2 class="post-title">{{ item.post.title }}</h2>
+                    <h3 class="post-subtitle">{{ item.post.subtitle }}</h3>
+                </a>
+                <p class="post-meta">
+                    Posted by
+                    <a href="#">{{ item.author_first_name }} {{ item.author_last_name }}</a>
+                    on {{ item.post.date.strftime('%B %d, %Y') }}
+                    {% if current_user.is_authenticated and current_user.id == 1 %}
+                    <a href="{{ url_for('delete_post', post_id=item.post.id) }}">✘</a>
+                    {% endif %}
+                </p>
+            </div>
+            <!-- Divider-->
+            <hr class="my-4" />
+            {% endfor %}
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-between mb-4">
+                {% if prev_url %}
+                <a class="btn btn-primary text-uppercase" href="{{ prev_url }}">← Newer Posts</a>
+                {% endif %}
+                {% if next_url %}
+                <a class="btn btn-primary text-uppercase" href="{{ next_url }}">Older Posts →</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<hr>
 {% endblock %}

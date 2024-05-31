@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}{% if is_edit %}Edit Post{% else %}New Post{% endif %} - Nobu Ariyoshi{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<header class="masthead colored-section">
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <div class="page-heading">
+                    <h1>{% if is_edit %}Edit Post{% else %}New Post{% endif %}</h1>
+                    <span class="subheading">You're going to make a great blog post!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Conditionally display either the drafts list or the edit post button based on context -->
+{% if is_edit %}
+    <!-- If editing a specific post, show the edit button (assuming 'post' variable is passed into template) -->
+    <div class="container">
+        <div class="d-flex justify-content-end mb-4">
+            <a class="btn btn-primary" href="{{ url_for('edit_draft', post_id=post.id) }}">Edit Post</a>
+        </div>
+    </div>
+{% else %}
+    <!-- If not editing a specific post, list all drafts -->
+    <div class="container">
+        <h2>Draft Posts</h2>
+        <ul class="list-group">
+        {% for post in drafts %}
+            <li class="list-group-item">
+                {{ post.title }}
+                <a href="{{ url_for('edit_draft', post_id=post.id) }}" class="btn btn-primary btn-sm">Edit</a>
+            </li>
+        {% else %}
+            <li class="list-group-item">No drafts available.</li>
+        {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,30 +1,37 @@
 {% extends "base.html" %}
 
-{% block title %}登録{% endblock %}
+{% block title %}Register - SlimTechMD{% endblock %}
+
+{% block header %}
+<header class="masthead" style="background-image: url('static/images/register-bg.jpg')">
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <div class="page-heading">
+                    <h1>登録</h1>
+                    <span class="subheading">フォームに記入して登録してください。</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+{% endblock %}
 
 {% block content %}
-
-    <header class="masthead colored-section">
-      <h1 class="header-title">登録</h1> <!-- Registration -->
-    </header>
-
-<main class="mb-4 white-section">
-  <div class="container px-4 px-lg-5">
-    <div class="row gx-4 gx-lg-5 justify-content-center">
-      <div class="col-md-10 col-lg-8 col-xl-7">
-        <p>フォームに記入して登録してください。</p>
+<div class="row gx-4 gx-lg-5 justify-content-center">
+    <div class="col-md-10 col-lg-8 col-xl-7">
         <div class="my-5">
           <!-- Start of registration form -->
-          <form id="registrationForm" action="{{ url_for('register') }}" method="post">
+          <form id="registrationForm" action="{{ url_for('register') }}" method="post" novalidate>
             {{ form.hidden_tag() }} <!-- CSRF トークン -->
 
-                        <!-- 名前フィールド -->
+            <!-- 名前フィールド -->
             <div class="form-floating mb-3">
               {{ form.first_name(class="form-control", id="firstName", placeholder="名前を入力してください...") }}
               <label for="firstName">名前</label>
               {% if form.first_name.errors %}
                 {% for error in form.first_name.errors %}
-                  <div class="invalid-feedback" style="display:block;">
+                  <div class="invalid-feedback d-block">
                     {{ error }}
                   </div>
                 {% endfor %}
@@ -37,7 +44,7 @@
               <label for="lastName">姓</label>
               {% if form.last_name.errors %}
                 {% for error in form.last_name.errors %}
-                  <div class="invalid-feedback" style="display:block;">
+                  <div class="invalid-feedback d-block">
                     {{ error }}
                   </div>
                 {% endfor %}
@@ -50,7 +57,7 @@
               <label for="username">ユーザーネーム</label>
               {% if form.username.errors %}
                 {% for error in form.username.errors %}
-                  <div class="invalid-feedback" style="display:block;">
+                  <div class="invalid-feedback d-block">
                     {{ error }}
                   </div>
                 {% endfor %}
@@ -63,7 +70,7 @@
               <label for="email">メールアドレス</label>
               {% if form.email.errors %}
                 {% for error in form.email.errors %}
-                  <div class="invalid-feedback" style="display:block;">
+                  <div class="invalid-feedback d-block">
                     {{ error }}
                   </div>
                 {% endfor %}
@@ -76,7 +83,7 @@
               <label for="password">パスワード</label>
               {% if form.password.errors %}
                 {% for error in form.password.errors %}
-                  <div class="invalid-feedback" style="display:block;">
+                  <div class="invalid-feedback d-block">
                     {{ error }}
                   </div>
                 {% endfor %}
@@ -89,18 +96,17 @@
               <label for="confirmPassword">パスワード確認</label>
               {% if form.confirm_password.errors %}
                 {% for error in form.confirm_password.errors %}
-                  <div class="invalid-feedback" style="display:block;">
+                  <div class="invalid-feedback d-block">
                     {{ error }}
                   </div>
                 {% endfor %}
               {% endif %}
             </div>
-            <button type="submit" class="btn btn-orange">登録</button
+
+            <button type="submit" class="btn btn-primary text-uppercase">登録</button>
           </form>
           <!-- End of registration form -->
         </div>
       </div>
     </div>
-  </div>
-</main>
 {% endblock %}

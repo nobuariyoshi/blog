@@ -1,66 +1,49 @@
 {% extends "base.html" %}
 
-{% block title %}ログイン - 信夫有義{% endblock %}
+{% block title %}Login - SlimTechMD{% endblock %}
+
+{% block header %}
+<header class="masthead" style="background-image: url('static/images/login-bg.jpg')">
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <div class="page-heading">
+                    <h1>ログイン</h1>
+                    <span class="subheading">アカウントにログインしてください。</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+{% endblock %}
 
 {% block content %}
-
-    <header class="masthead colored-section">
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-success">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% else %}
-                <h1 class="header-title">ログイン</h1>
-            {% endif %}
-        {% endwith %}
-    </header>
-
-<main class="mb-4 white-section">
-  <div class="container px-4 px-lg-5">
-    <div class="row gx-4 gx-lg-5 justify-content-center">
-      <div class="col-md-10 col-lg-8 col-xl-7">
-
-        <p>ユーザーネームとパスワードを入力してください。</p>
+<div class="row gx-4 gx-lg-5 justify-content-center">
+    <div class="col-md-10 col-lg-8 col-xl-7">
         <div class="my-5">
-          <!-- ログインフォームの開始 -->
-          <form id="myForm" action="{{ url_for('login') }}" method="post">
-            {{ form.hidden_tag() }} <!-- CSRFトークン -->
-            <!-- ユーザーネームフィールド -->
-            <div class="form-floating mb-3">
-              {{ form.username(class="form-control", id="username", placeholder="ユーザーネームを入力...") }}
-              <label for="username">ユーザーネーム</label>
-              {% if form.username.errors %}
-                {% for error in form.username.errors %}
-                  <div class="invalid-feedback" style="display:block;">
-                    {{ error }}
-                  </div>
-                {% endfor %}
-              {% endif %}
-            </div>
-
-            <!-- パスワードフィールド -->
-            <div class="form-floating mb-3">
-              {{ form.password(class="form-control", id="password", placeholder="パスワードを入力...") }}
-              <label for="password">パスワード</label>
-              {% if form.password.errors %}
-                {% for error in form.password.errors %}
-                  <div class="invalid-feedback" style="display:block;">
-                    {{ error }}
-                  </div>
-                {% endfor %}
-              {% endif %}
-            </div>
-
-            <button type="submit" class="btn btn-orange">ログイン</button>
-          </form>
-          <!-- ログインフォームの終了 -->
+            <form method="POST" action="{{ url_for('login') }}" novalidate>
+                {{ form.hidden_tag() }}
+                <div class="form-floating mb-3">
+                    {{ form.username(class="form-control", placeholder="ユーザーネームを入力してください") }}
+                    <label for="username">ユーザーネーム</label>
+                    {% if form.username.errors %}
+                    <div class="invalid-feedback d-block">{{ form.username.errors[0] }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-floating mb-3">
+                    {{ form.password(class="form-control", placeholder="パスワードを入力してください") }}
+                    <label for="password">パスワード</label>
+                    {% if form.password.errors %}
+                    <div class="invalid-feedback d-block">{{ form.password.errors[0] }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group form-check mb-3">
+                    {{ form.remember(class="form-check-input", id="rememberMe") }}
+                    {{ form.remember.label(class="form-check-label", for="rememberMe") }}
+                </div>
+                <button type="submit" class="btn btn-primary text-uppercase">ログイン</button>
+            </form>
         </div>
-      </div>
     </div>
-  </div>
-</main>
-
+</div>
 {% endblock %}

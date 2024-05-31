@@ -1,41 +1,36 @@
 {% extends "base.html" %}
 
-{% block title %}About Us{% endblock %}
+{% block title %}About - SlimTechMD{% endblock %}
 
-{% block content %}
-
-    <!-- Page Header -->
-    <header class="masthead colored-section">
-        <h1>アイキュリアについて</h1>
-    </header>
-
-    <section class="white-section" id="profile">
-        <div class="container-fluid">
-            <div class="row"> <!-- Use 'row' to create a flex row container -->
-                <div class="col-lg-4 col-md-6 col-12 profile"> <!-- Each profile will take up 4 columns on large screens -->
-                    <a href="{{ url_for('about_nobu') }}">
-                        <img class="myphoto" src="{{ url_for('static', filename='images/my-photo.png') }}" alt="Nobuhiro Ariyoshi profile picture" />
-                        <h2 class="greeting">Nobuhiro Ariyoshi, MD</h2>
-                        <p class="intro">Co-founder</p>
-                    </a>
-                </div>
-                <div class="col-lg-4 col-md-6 col-12 profile">
-                    <a href="{{ url_for('about_takenobu') }}">
-                        <img class="myphoto" src="{{ url_for('static', filename='images/takenobu_picture.png') }}" alt="Takenobu Shimura profile picture" />
-                        <h2 class="greeting">Takenobu Shimura</h2>
-                        <p class="intro">Co-founder</p>
-                    </a>
-                </div>
-                <div class="col-lg-4 col-md-6 col-12 profile">
-                    <a href="{{ url_for('about_aoi') }}">
-                        <img class="myphoto" src="{{ url_for('static', filename='images/aoi_picture.png') }}" alt="Aoi Otani profile picture" />
-                        <h2 class="greeting">Aoi Otani</h2>
-                        <p class="intro">Co-founder</p>
-                    </a>
+{% block header %}
+<header class="masthead" style="background-image: url('static/images/about-bg.jpg')">
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <div class="page-heading">
+                    <h1>プロフィール</h1>
+                    <span class="subheading">This is what I do.</span>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="row gx-4 gx-lg-5 justify-content-center">
+    <div class="col-md-10 col-lg-8 col-xl-7 text-center">
+        <img src="{{ url_for('static', filename='images/my-photo.png') }}" alt="profile-img" class="profile-img">
+        <h2>こんにちは</h2>
+        <p class="intro">
+            ハワイ在住の日本人医師、ノブです。
+            体重管理と肥満医学に特化したAIヘルスケアプロジェクトAilaniのco-founder。
+            科学的根拠に基づいた情報を提供します。
+        </p>
+    </div>
+</div>
+
+
 
 
 {% endblock %}

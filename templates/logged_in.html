@@ -1,12 +1,28 @@
 {% extends "base.html" %}
+
 {% block title %}ログイン成功{% endblock %}
-{% block content %}
-    <header class="masthead colored-section">
-        <h1 class="header-title">ログインしました</h1>
-        <!-- ホームページへのボタン -->
-        <a href="{{ url_for('home') }}" class="btn btn-orange">ホーム</a>
-        <!-- ダウンロードページへのボタン -->
-        <a href="{{ url_for('secrets') }}" class="btn btn-secondary">シークレットファイル</a>
-    </header>
+
+{% block header %}
+<header class="masthead" style="background-image: url('static/images/success-bg.jpg')">
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <div class="page-heading">
+                    <h1>ログイン成功</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
 {% endblock %}
 
+{% block content %}
+<div class="row gx-4 gx-lg-5 justify-content-center">
+    <div class="col-md-10 col-lg-8 col-xl-7">
+        <div class="my-5 text-center">
+            <!-- ホームページへのボタン -->
+            <a href="{{ url_for('home') }}" class="btn btn-primary text-uppercase">ホーム</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

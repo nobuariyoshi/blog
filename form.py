@@ -7,7 +7,6 @@ from wtforms.validators import DataRequired, Email, Length, EqualTo, URL
 class ContactForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    phone = StringField('Phone')
     message = TextAreaField('Message', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
@@ -25,36 +24,17 @@ class RegisterForm(FlaskForm):
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
-    remember = BooleanField('Remember Me')  # Adding the remember me checkbox
+    remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
 
-
-
-class TravelInsuranceForm(FlaskForm):
-    company = StringField('保険会社', validators=[DataRequired()])
-    premium = StringField('保険料', validators=[DataRequired()])
-    medical_expenses = StringField('治療費用', validators=[DataRequired()])
-    disease_death = StringField('疾病死亡', validators=[DataRequired()])
-    age_condition = StringField('年齢条件', validators=[DataRequired()])
-    submit = SubmitField('Submit')
-
-
-class HospitalForm(FlaskForm):
-    name = StringField('Hospital Name', validators=[DataRequired()])
-    address = StringField('Address')
-    phone = StringField('Phone Number')
-    url = URLField('Website URL')  # Add a URL field
-    description = TextAreaField('Description')
-    submit = SubmitField('Add Hospital')
 
 
 class CreatePostForm(FlaskForm):
     title = StringField("Blog Post Title", validators=[DataRequired()])
     subtitle = StringField("Subtitle", validators=[DataRequired()])
-    author = StringField("Your Name", validators=[DataRequired()])
     img_url = StringField("Blog Image URL", validators=[DataRequired(), URL()])
     body = CKEditorField("Blog Content", validators=[DataRequired()])
-    submit = SubmitField("Submit Post")
+    submit = SubmitField("Save Post")
 
 
 class CommentForm(FlaskForm):

@@ -1,34 +1,22 @@
-<header>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url_for('home') }}">aicurea</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarResponsive">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">ホーム</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('about') }}">アイキュリアについて</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('get_blog') }}">ブログ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}">お問い合わせ</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            情報
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{{ url_for('insurance_companies') }}">旅行保険一覧</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('hospital') }}">病院一覧</a></li>
-                            <!-- 必要に応じてさらにリンクを追加 -->
-                        </ul>
-                    </li>
-                    {% if not current_user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">登録</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">ログイン</a></li>
-                    {% else %}
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">ログアウト</a></li>
-                    {% endif %}
-                </ul>
-            </div>
+<nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+    <div class="container px-4 px-lg-5">
+        <a class="navbar-brand" href="/">SlimTechMD</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            メニュー
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="/">ホーム</a></li>
+                {% if current_user.is_authenticated %}
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ url_for('logout') }}">ログアウト</a></li>
+                {% else %}
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ url_for('login') }}">ログイン</a></li>
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ url_for('register') }}">登録</a></li>
+                {% endif %}
+                <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ url_for('about') }}">プロフィール</a></li>
+                <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ url_for('contact') }}">問い合わせ</a></li>
+            </ul>
         </div>
-    </nav>
-</header>
+    </div>
+</nav>

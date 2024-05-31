@@ -1,47 +1,67 @@
 {% extends "base.html" %}
 
-{% block title %}お問い合わせ - Nobu Ariyoshi{% endblock %}
+{% block title %}Contact - SlimTechMD{% endblock %}
+
+{% block header %}
+<header class="masthead" style="background-image: url('/static/images/contact-bg.jpg')">
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <div class="page-heading">
+                    {% if msg_sent %}
+                        <h1>送信しました</h1>
+                    {% else %}
+                        <h1>問い合わせ</h1>
+                        <span class="subheading">Have questions? I have answers.</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+{% endblock %}
 
 {% block content %}
-
-<header class="masthead colored-section">
-      <h1>お問い合わせ</h1>
-</header>
-
-<main class="mb-4 white-section">
-  <div class="container px-4 px-lg-5">
-    <div class="row gx-4 gx-lg-5 justify-content-center">
-      <div class="col-md-10 col-lg-8 col-xl-7">
-        <p>ご連絡を希望されますか？下記のフォームにご記入の上、メッセージをお送りください。可能な限り早急にご返答いたします！</p>
+<div class="row gx-4 gx-lg-5 justify-content-center">
+    <div class="col-md-10 col-lg-8 col-xl-7">
+        {% if msg_sent %}
+            <p>お問い合わせありがとうございます。できるだけ早く返信いたします。</p>
+            <div class="my-5 text-center">
+            <!-- ホームページへのボタン -->
+            <a href="{{ url_for('home') }}" class="btn btn-primary text-uppercase">ホーム</a>
+            </div>
+        {% else %}
+            <p>AIと体重管理に関する話題、または日常のちょっとしたことでも、お気軽にメッセージを送ってください。皆さんからのメッセージを楽しみにしています！</p>
         <div class="my-5">
-          <!-- お問い合わせフォームの開始 -->
-        <form id="contactForm" action="{{ url_for('contact') }}" method="post">
-          {{ form.hidden_tag() }}
-
-          <div class="form-floating mb-3">
-            {{ form.name(class="form-control", id="name", placeholder="お名前を入力してください...") }}
-            <label for="name" class="form-label">お名前</label>
-          </div>
-          <div class="form-floating mb-3">
-            {{ form.email(class="form-control", id="email", placeholder="メールアドレスを入力してください...") }}
-            <label for="email" class="form-label">メールアドレス</label>
-          </div>
-          <div class="form-floating mb-3">
-            {{ form.phone(class="form-control", id="phone", placeholder="電話番号を入力してください...") }}
-            <label for="phone" class="form-label">電話番号</label>
-          </div>
-          <div class="form-floating mb-3">
-            {{ form.message(class="form-control", id="message", placeholder="こちらにメッセージを入力してください...", style="height: 12rem") }}
-            <label for="message" class="form-label">メッセージ</label>
-          </div>
-          <button type="submit" class="btn btn-orange">送信</button>
-        </form>
-
-          <!-- お問い合わせフォームの終了 -->
+            <form id="contactForm" method="POST" action="{{ url_for('contact') }}" novalidate>
+                {{ form.hidden_tag() }}
+                <div class="form-floating">
+                    {{ form.name(class="form-control", placeholder="Enter your name...") }}
+                    <label for="name">名前</label>
+                    {% if form.name.errors %}
+                        <div class="invalid-feedback d-block">{{ form.name.errors[0] }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-floating">
+                    {{ form.email(class="form-control", placeholder="Enter your email...") }}
+                    <label for="email">メールアドレス</label>
+                    {% if form.email.errors %}
+                        <div class="invalid-feedback d-block">{{ form.email.errors[0] }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-floating">
+                    {{ form.message(class="form-control", placeholder="Enter your message here...", style="height: 12rem") }}
+                    <label for="message">メッセージ</label>
+                    {% if form.message.errors %}
+                        <div class="invalid-feedback d-block">{{ form.message.errors[0] }}</div>
+                    {% endif %}
+                </div>
+                <br />
+                <!-- Submit Button -->
+                <button class="btn btn-primary text-uppercase" id="submitButton" type="submit">送信</button>
+            </form>
         </div>
-      </div>
+        {% endif %}
     </div>
-  </div>
-</main>
-
+</div>
 {% endblock %}

@@ -1,11 +1,11 @@
+from sqlalchemy import ForeignKey, Integer, String, Text, Boolean, DateTime, Column
+from sqlalchemy.orm import declarative_base, relationship
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import os
 from dotenv import load_dotenv
-from flask_login import UserMixin
-from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy import Integer, String, Column, ForeignKey, DateTime, Text
-from sqlalchemy.orm import declarative_base, relationship
 
 # Load environment variables
 load_dotenv()
@@ -52,61 +52,22 @@ class Contact(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), nullable=False)
-    phone = db.Column(db.String(120))
     message = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
-class TravelInsurance(db.Model):
-    __tablename__ = 'travel_insurances'
-
-    id = db.Column(db.Integer, primary_key=True)
-    company = db.Column(db.String(120), nullable=False)
-    premium = db.Column(db.String(120), nullable=False)
-    medical_expenses = db.Column(db.String(120), nullable=False)
-    disease_death = db.Column(db.String(120), nullable=False)
-    age_condition = db.Column(db.String(120), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    # Uncomment the next line if TravelInsurance is related to a User
-    # user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'company': self.company,
-            'premium': self.premium,
-            'medical_expenses': self.medical_expenses,
-            'disease_death': self.disease_death,
-            'age_condition': self.age_condition,
-            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S')  # Formatting datetime for JSON serialization
-        }
-
-
-class Hospital(db.Model):
-    __tablename__ = 'hospitals'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), nullable=False)
-    address = db.Column(db.String(255))
-    phone = db.Column(db.String(120))
-    url = db.Column(db.String(255))  # Add a URL column
-    description = db.Column(db.Text)
-    # Add other fields as needed
-
-
 class BlogPost(db.Model):
     __tablename__ = 'blog_posts'
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(250), unique=True, nullable=False)
-    subtitle = db.Column(db.String(250), nullable=False)
-    date = db.Column(db.String(250), nullable=False)  # Consider changing to DateTime
-    body = db.Column(Text, nullable=False)
-    # Change 'author' to 'author_id' to reference the User's id
-    author_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)  # Add ForeignKey to reference User
-    img_url = db.Column(db.String(500), nullable=False)
-    # Add a relationship to Comment
-    comments = relationship('Comment', backref='post', lazy=True)
+    id = Column(Integer, primary_key=True)
+    title = Column(String(250), unique=True, nullable=False)
+    subtitle = Column(String(250), nullable=False)
+    date = Column(DateTime, default=datetime.utcnow)  # Changed to DateTime, defaults to current time
+    body = Column(Text, nullable=False)
+    author_id = Column(Integer, ForeignKey('users.id'), nullable=False)  # ForeignKey to reference User
+    img_url = Column(String(500), nullable=False)
+    comments = relationship('Comment', backref='post', lazy=True,
+                            cascade="all, delete-orphan")  # Relationship to Comment
+    draft = Column(Boolean, default=True)  # New column to indicate draft status, defaulting to True
 
 
 class Comment(db.Model):
@@ -115,5 +76,5 @@ class Comment(db.Model):
     text = db.Column(Text, nullable=False)
     date_posted = db.Column(DateTime, default=datetime.utcnow, nullable=False)
     author_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)  # Add ForeignKey to reference User
-    post_id = db.Column(db.Integer, ForeignKey('blog_posts.id'), nullable=False)  # Add ForeignKey to reference BlogPost
-
+    post_id = db.Column(db.Integer, ForeignKey('blog_posts.id', ondelete='CASCADE'),
+                        nullable=False)  # Add ForeignKey to reference BlogPost
