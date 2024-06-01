@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, abort, session
 from flask_bootstrap import Bootstrap5
 from flask_wtf.csrf import CSRFProtect
 from functools import wraps
 from datetime import datetime
 import os
-import smtplib
+from O365 import Account, FileSystemTokenBackend
 from werkzeug.security import generate_password_hash, check_password_hash
 from form import ContactForm, RegisterForm, LoginForm, CreatePostForm, CommentForm
 from dotenv import load_dotenv, find_dotenv
@@ -14,15 +14,14 @@ from database import User, Contact, db, DATABASE_URL, BlogPost, Comment
 from flask_migrate import Migrate
 from email.mime.text import MIMEText
 from email_utils import send_message_email
-from O365 import Account, FileSystemTokenBackend
 import logging
-
-# Load environment variables
-load_dotenv(os.path.expanduser('~/config/.env'))
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+
+# Load environment variables
+load_dotenv(os.path.expanduser('~/config/.env'))
 
 # Database and Flask-Login configuration
 app = Flask(__name__)
@@ -38,6 +37,17 @@ migrate = Migrate(app, db)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+# Email configuration
+my_email = os.environ["MY_EMAIL"]
+client_id = os.environ['CLIENT_365_ID']
+client_secret = os.environ['CLIENT_365_SECRET']
+tenant_id = os.environ['TENANT_365_ID']
+redirect_uri = os.environ['REDIRECT_URI']
+token_backend = FileSystemTokenBackend(token_path='.', token_filename='o365_token.txt')
+credentials = (client_id, client_secret)
+
+account = Account(credentials, token_backend=token_backend)
 
 
 def gravatar(email, size=100, default='identicon', rating='g'):
@@ -66,20 +76,17 @@ def inject_user():
     return dict(logged_in=current_user.is_authenticated, year=year)
 
 
-# <-----------------------------HOME ROUTE------------------------------------>
 @app.route("/")
 def home():
     latest_posts = BlogPost.query.order_by(BlogPost.id.desc()).limit(3).all()
     return render_template("index.html", all_posts=latest_posts)
 
 
-# <-----------------------------ABOUT ROUTE------------------------------------>
 @app.route('/about')
 def about():
     return render_template('about.html')
 
 
-# <-----------------------------BLOG ROUTES------------------------------------>
 @app.route("/blog")
 def get_blog():
     page = request.args.get('page', 1, type=int)
@@ -192,7 +199,6 @@ def delete_post(post_id):
     return redirect(url_for('get_blog'))
 
 
-# Contact route
 @app.route("/contact", methods=["GET", "POST"])
 def contact():
     form = ContactForm()
@@ -221,10 +227,44 @@ def contact_success():
     return render_template("contact.html", msg_sent=True, form=form)
 
 
-# User Authentication routes
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+# OAuth routes
+@app.route('/start-auth')
+def start_auth():
+    auth_url, state = account.con.get_authorization_url(redirect_uri=redirect_uri)
+    session['oauth_state'] = state
+    return redirect(auth_url)
+
+
+@app.route('/oauth/callback')
+def oauth_callback():
+    code = request.args.get('code')
+    if code:
+        logger.debug(f"Received OAuth callback with code: {code}")
+
+        credentials = (os.environ['CLIENT_365_ID'], os.environ['CLIENT_365_SECRET'])
+        token_backend = FileSystemTokenBackend(token_path='.', token_filename='o365_token.txt')
+
+        # Create the Account instance with the token backend
+        account = Account(credentials, token_backend=token_backend)
+
+        if account.authenticate(code=code, redirect_uri=redirect_uri):
+            logger.debug("Account is authenticated.")
+            flash('You have been successfully authenticated with Microsoft 365.')
+            return redirect(url_for('home'))
+        else:
+            logger.error("Failed to authenticate the account with Microsoft 365.")
+            flash('Authentication with Microsoft 365 failed during token exchange.')
+            return redirect(url_for('error_page'))
+    else:
+        logger.error("No authorization code was provided in the OAuth callback.")
+        flash('Failed to authenticate with Microsoft 365. No authorization code was provided.')
+        return redirect(url_for('home'))
+
+
+@app.route('/error')
+def error_page():
+    # You can pass more context or use a flash message to display the error details
+    return render_template('error.html')
 
 
 @app.route("/register", methods=['GET', 'POST'])
@@ -280,37 +320,6 @@ def logged_in():
 def logout():
     logout_user()
     return redirect(url_for('home'))
-
-
-@app.route('/callback')
-def oauth_callback():
-    code = request.args.get('code')
-    if code:
-        logger.debug(f"Received OAuth callback with code: {code}")
-        credentials = (os.environ['CLIENT_365_ID'], os.environ['CLIENT_365_SECRET'])
-        token_backend = FileSystemTokenBackend(token_path='.', token_filename='o365_token.txt')
-
-        account = Account(credentials, token_backend=token_backend)
-        result = account.con.get_token_from_code(code, redirect_uri=url_for('oauth_callback', _external=True))
-
-        if result:
-            logger.debug("Account is authenticated.")
-            flash('You have been successfully authenticated with Microsoft 365.')
-            return redirect(url_for('home'))
-        else:
-            logger.error("Failed to authenticate the account with Microsoft 365.")
-            flash('Authentication with Microsoft 365 failed during token exchange.')
-            return redirect(url_for('error_page'))
-    else:
-        logger.error("No authorization code was provided in the OAuth callback.")
-        flash('Failed to authenticate with Microsoft 365. No authorization code was provided.')
-        return redirect(url_for('home'))
-
-
-@app.route('/error')
-def error_page():
-    error_message = "There was a problem processing your request. Please try again later."
-    return render_template('error.html', error_message=error_message)
 
 
 if __name__ == '__main__':
