@@ -21,7 +21,7 @@ mysql_host = os.environ.get('MYSQL_HOST', 'localhost')
 mysql_db = os.environ.get('MYSQL_DB', 'telemedicine')
 
 # Setup the database connection
-DATABASE_URL = f"mysql://{mysql_user}:{mysql_password}@{mysql_host}/{mysql_db}"
+DATABASE_URL = f"mysql+pymysql://{mysql_user}:{mysql_password}@{mysql_host}/{mysql_db}"
 
 # Define the declarative base
 Base = declarative_base()
