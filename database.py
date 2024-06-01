@@ -11,12 +11,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Get password from environment variable
-postgresql_password = os.environ.get('POSTGRESQL_PASSWORD')
-if not postgresql_password:
-    raise ValueError("POSTGRESQL_PASSWORD environment variable is not set.")
+mysql_password = os.environ.get('MYSQL_PASSWORD')
+if not mysql_password:
+    raise ValueError("MYSQL_PASSWORD environment variable is not set.")
+
+# Get other environment variables
+mysql_user = os.environ.get('MYSQL_USER', 'root')
+mysql_host = os.environ.get('MYSQL_HOST', 'localhost')
+mysql_db = os.environ.get('MYSQL_DB', 'telemedicine')
 
 # Setup the database connection
-DATABASE_URL = f"postgresql://postgres:{postgresql_password}@localhost/telemedicine"
+DATABASE_URL = f"mysql://{mysql_user}:{mysql_password}@{mysql_host}/{mysql_db}"
 
 # Define the declarative base
 Base = declarative_base()
@@ -24,7 +29,7 @@ Base = declarative_base()
 # Initialize SQLAlchemy with the base model
 db = SQLAlchemy(model_class=Base)
 
-
+# Models
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)

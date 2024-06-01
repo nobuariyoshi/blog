@@ -14,3 +14,4 @@ Werkzeug==3.0.1
 python-dotenv==1.0.0
 email-validator==2.1.0.post1
 psycopg2==2.9.9
+gunicorn==22.0.0
