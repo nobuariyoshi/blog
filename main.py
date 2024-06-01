@@ -15,6 +15,7 @@ from flask_migrate import Migrate
 from email.mime.text import MIMEText
 from email_utils import send_message_email
 import logging
+from sqlalchemy.sql import text
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -32,7 +33,7 @@ bootstrap = Bootstrap5(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_POOL_RECYCLE'] = 28000  # Recycle connections every 28000 seconds
-app.config['SQLALCHEMY_POOL_TIMEOUT'] = 20  # Timeout for getting a connection from the pool
+app.config['SQLALCHEMY_POOL_TIMEOUT'] = 20     # Timeout for getting a connection from the pool
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -51,15 +52,12 @@ credentials = (client_id, client_secret)
 
 account = Account(credentials, token_backend=token_backend)
 
-
 def gravatar(email, size=100, default='identicon', rating='g'):
     url = 'https://www.gravatar.com/avatar/'
     hash = md5(email.lower().encode('utf-8')).hexdigest()
     return f'{url}{hash}?s={size}&d={default}&r={rating}'
 
-
 app.jinja_env.filters['gravatar'] = gravatar
-
 
 # Create admin-only decorator
 def admin_only(f):
@@ -68,39 +66,33 @@ def admin_only(f):
         if current_user.id != 1:
             return abort(403)
         return f(*args, **kwargs)
-
     return decorated_function
-
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
 
 @app.context_processor
 def inject_user():
     year = datetime.now().year
     return dict(logged_in=current_user.is_authenticated, year=year)
 
-
 @app.before_request
 def set_mysql_timeout():
-    # Run the session-level SQL commands to set the timeout
-    with db.engine.connect() as connection:
-        connection.execute("SET SESSION wait_timeout = 28800")
-        connection.execute("SET SESSION interactive_timeout = 28800")
-
+    if not hasattr(g, 'mysql_timeout_set'):
+        with db.engine.connect() as connection:
+            connection.execute(text("SET SESSION wait_timeout = 28800"))
+            connection.execute(text("SET SESSION interactive_timeout = 28800"))
+        g.mysql_timeout_set = True
 
 @app.route("/")
 def home():
     latest_posts = BlogPost.query.order_by(BlogPost.id.desc()).limit(3).all()
     return render_template("index.html", all_posts=latest_posts)
 
-
 @app.route('/about')
 def about():
     return render_template('about.html')
-
 
 @app.route("/blog")
 def get_blog():
@@ -120,7 +112,6 @@ def get_blog():
     prev_url = url_for('get_blog', page=paginated_posts.prev_num) if paginated_posts.has_prev else None
 
     return render_template("blog.html", all_posts=posts_data, next_url=next_url, prev_url=prev_url)
-
 
 @app.route("/blog/post/<int:post_id>", methods=['GET', 'POST'])
 def show_post(post_id):
@@ -146,7 +137,6 @@ def show_post(post_id):
         'author_last_name': author_last_name
     }
     return render_template("post.html", post=post, post_data=post_data, form=comment_form, comments=comments)
-
 
 @app.route("/new-post", methods=["GET", "POST"])
 @login_required
@@ -175,7 +165,6 @@ def add_new_post():
             print("Form not validated:", form.errors)
     return render_template("make-post.html", form=form)
 
-
 @app.route("/blog/edit-post/<int:post_id>", methods=["GET", "POST"])
 @admin_only
 def edit_post(post_id):
@@ -195,7 +184,6 @@ def edit_post(post_id):
             flash("投稿の修正中にエラーが発生しました。もう一度お試しください。")
     return render_template("make-post.html", form=form, is_edit=True, post=post)
 
-
 @app.route("/blog/delete/<int:post_id>")
 @admin_only
 def delete_post(post_id):
@@ -212,7 +200,6 @@ def delete_post(post_id):
         print(f"Error deleting post: {e}")
         flash("投稿の削除中にエラーが発生しました。もう一度お試しください。")
     return redirect(url_for('get_blog'))
-
 
 @app.route("/contact", methods=["GET", "POST"])
 def contact():
@@ -235,12 +222,10 @@ def contact():
             print("Form not validated:", form.errors)
     return render_template("contact.html", msg_sent=False, form=form)
 
-
 @app.route("/contact/success")
 def contact_success():
     form = ContactForm()
     return render_template("contact.html", msg_sent=True, form=form)
-
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
@@ -251,7 +236,7 @@ def register():
     if form.validate_on_submit():
         existing_user = User.query.filter(
             (User.email == form.email.data) | (User.username == form.username.data)).first()
-        if existing_user:
+        if existing user:
             flash('そのメールアドレスまたはユーザー名のユーザーは既に存在します。')
             return redirect(url_for('login'))
         user = User(
@@ -266,7 +251,6 @@ def register():
         flash('登録が成功しました！')
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
-
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -283,19 +267,16 @@ def login():
             flash('ユーザー名またはパスワードが無効です')
     return render_template('login.html', form=form)
 
-
 @app.route('/logged_in')
 @login_required
 def logged_in():
     return render_template("logged_in.html")
-
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('home'))
-
 
 @app.route('/start-auth')
 def start_auth():
@@ -305,7 +286,6 @@ def start_auth():
     )
     session['oauth_state'] = state
     return redirect(auth_url)
-
 
 @app.route('/callback')
 def oauth_callback():
@@ -333,12 +313,10 @@ def oauth_callback():
         flash('Failed to authenticate with Microsoft 365. No authorization code was provided.')
         return redirect(url_for('home'))
 
-
 @app.route('/error')
 def error_page():
     # You can pass more context or use a flash message to display the error details
     return render_template('error.html')
-
 
 if __name__ == '__main__':
     with app.app_context():
