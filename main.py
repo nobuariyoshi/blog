@@ -13,6 +13,7 @@ from flask_ckeditor import CKEditor
 from database import User, Contact, db, DATABASE_URL, BlogPost, Comment
 from flask_migrate import Migrate
 from email.mime.text import MIMEText
+from email_utils import send_message_email
 
 # Load environment variables
 load_dotenv(os.path.expanduser('~/config/.env'))
@@ -31,21 +32,6 @@ migrate = Migrate(app, db)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
-
-# Email configuration
-
-
-def send_email(name, email, message):
-    email_message = f"Subject: New Message\n\nName: {name}\nEmail: {email}\nMessage: {message}"
-    msg = MIMEText(email_message)
-    msg['From'] = os.environ["MY_EMAIL"]
-    msg['To'] = os.environ["MY_EMAIL"]
-    msg['Subject'] = 'New Message'
-
-    with smtplib.SMTP(os.environ["SMTP_SERVER"], os.environ["SMTP_PORT"]) as connection:
-        if os.environ.get("SMTP_USE_TLS") == "True":
-            connection.starttls()
-        connection.sendmail(os.environ["MY_EMAIL"], os.environ["MY_EMAIL"], msg.as_string())
 
 
 def gravatar(email, size=100, default='identicon', rating='g'):
@@ -217,7 +203,7 @@ def contact():
             db.session.commit()
             flash('メッセージを送信しました！')
             print(f"Form Data: {form.name.data}, {form.email.data}, {form.message.data}")
-            send_email(form.name.data, form.email.data, form.message.data)
+            send_message_email(form.name.data, form.email.data, form.message.data)
             print("Email sent successfully!")
             return redirect(url_for('contact_success'))
         else:
