@@ -83,7 +83,7 @@ def inject_user():
     return dict(logged_in=current_user.is_authenticated, year=year)
 
 
-@app.before_first_request
+@app.before_request
 def set_mysql_timeout():
     # Run the session-level SQL commands to set the timeout
     with db.engine.connect() as connection:
