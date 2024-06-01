@@ -14,7 +14,7 @@ from database import User, Contact, db, DATABASE_URL, BlogPost, Comment
 from flask_migrate import Migrate
 
 # Load environment variables
-load_dotenv(find_dotenv())
+load_dotenv(os.path.expanduser('~/config/.env'))
 
 # Database and Flask-Login configuration
 app = Flask(__name__)

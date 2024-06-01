@@ -8,7 +8,7 @@ import os
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv()
+load_dotenv(os.path.expanduser('~/config/.env'))
 
 # Get password from environment variable
 mysql_password = os.environ.get('MYSQL_PASSWORD')
