@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 # Load environment variables
-_ = load_dotenv(find_dotenv())
+_ = load_dotenv(os.path.expanduser('~/config/.env'))
 
 # Email configuration
 my_email = os.environ["MY_EMAIL"]
