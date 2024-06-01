@@ -15,7 +15,7 @@ from flask_migrate import Migrate
 from email.mime.text import MIMEText
 from email_utils import send_message_email
 import logging
-from sqlalchemy.sql import text  # Import text
+from sqlalchemy.sql import text
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -188,6 +188,7 @@ def edit_post(post_id):
         post.subtitle = form.subtitle.data
         post.img_url = form.img_url.data
         post.body = form.body.data
+        post.date = datetime.now()  # Update the date to the current time
         try:
             db.session.commit()
             return redirect(url_for("show_post", post_id=post.id))
@@ -338,7 +339,6 @@ def oauth_callback():
 
 @app.route('/error')
 def error_page():
-    # You can pass more context or use a flash message to display the error details
     return render_template('error.html')
 
 
