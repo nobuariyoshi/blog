@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, session, abort, g
 from flask_bootstrap import Bootstrap5
 from flask_wtf.csrf import CSRFProtect
 from functools import wraps
