@@ -1,51 +1,55 @@
-from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv
 import logging
 import requests
-import ast
 import os
 
+# Configure logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 # Load environment variables
-_ = load_dotenv(os.path.expanduser('~/config/.env'))
+load_dotenv(os.path.expanduser('~/config/.env'))
 
 # Email configuration
 my_email = os.environ["MY_EMAIL"]
 client_id = os.environ['CLIENT_365_ID']
 client_secret = os.environ['CLIENT_365_SECRET']
 tenant_id = os.environ['TENANT_365_ID']
-refresh_token = os.environ['REFRESH_TOKEN']
 token_url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
 
-# Create payload using environmental variables
-payload = {
-    'client_id': client_id,
-    'scope': 'offline_access Mail.ReadWrite Mail.send',
-    'grant_type': 'refresh_token',
-    'client_secret': client_secret,
-    'refresh_token': refresh_token
-}
+def get_access_token(refresh_token):
+    payload = {
+        'client_id': client_id,
+        'scope': 'offline_access Mail.ReadWrite Mail.send',
+        'grant_type': 'refresh_token',
+        'client_secret': client_secret,
+        'refresh_token': refresh_token
+    }
 
-# Set headers
-headers = {
-    'Content-Type': 'application/x-www-form-urlencoded'
-}
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
 
-try:
-    # Send the request with dynamic payload
-    response = requests.post(token_url, headers=headers, data=payload)
-    response.raise_for_status()  # Check for request's success
-
-    # Convert string response to dictionary
-    result = ast.literal_eval(response.text)
-
-except requests.exceptions.RequestException as e:
-    logger.exception("An error occurred while requesting the token")
-
+    try:
+        response = requests.post(token_url, headers=headers, data=payload)
+        response.raise_for_status()  # Check for request's success
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        logger.exception("An error occurred while requesting the token")
+        return None
 
 def send_message_email(name, email, message):
-    # Format the email content with user's details
+    refresh_token = os.environ['REFRESH_TOKEN']
+    tokens = get_access_token(refresh_token)
+    if tokens is None:
+        logger.error("Failed to obtain access token.")
+        return False
+
+    access_token = tokens.get('access_token')
+    if not access_token:
+        logger.error("No access token found in the response.")
+        return False
+
     html_content = f"""
     <html>
     <body>
@@ -75,7 +79,7 @@ def send_message_email(name, email, message):
     }
 
     headers = {
-        'Authorization': 'Bearer ' + result['access_token']
+        'Authorization': 'Bearer ' + access_token
     }
 
     GRAPH_ENDPOINT = 'https://graph.microsoft.com/v1.0'
@@ -87,9 +91,11 @@ def send_message_email(name, email, message):
 
         if response.status_code == 202:
             logger.info(f"Email sent to: {my_email}")
+            return True
         else:
             logger.exception(f"Email not sent to: {my_email}")
+            return False
 
     except requests.exceptions.RequestException as e:
         logger.exception("An error occurred while sending the email")
-    return True
+        return False

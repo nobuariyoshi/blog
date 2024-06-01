@@ -31,6 +31,8 @@ ckeditor = CKEditor(app)
 bootstrap = Bootstrap5(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_POOL_RECYCLE'] = 28000  # Recycle connections every 28000 seconds
+app.config['SQLALCHEMY_POOL_TIMEOUT'] = 20  # Timeout for getting a connection from the pool
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -79,6 +81,14 @@ def load_user(user_id):
 def inject_user():
     year = datetime.now().year
     return dict(logged_in=current_user.is_authenticated, year=year)
+
+
+@app.before_first_request
+def set_mysql_timeout():
+    # Run the session-level SQL commands to set the timeout
+    with db.engine.connect() as connection:
+        connection.execute("SET SESSION wait_timeout = 28800")
+        connection.execute("SET SESSION interactive_timeout = 28800")
 
 
 @app.route("/")
