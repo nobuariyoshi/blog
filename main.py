@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, abort, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, abort
 from flask_bootstrap import Bootstrap5
 from flask_wtf.csrf import CSRFProtect
 from functools import wraps
@@ -7,7 +7,7 @@ import os
 from O365 import Account, FileSystemTokenBackend
 from werkzeug.security import generate_password_hash, check_password_hash
 from form import ContactForm, RegisterForm, LoginForm, CreatePostForm, CommentForm
-from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_ckeditor import CKEditor
 from database import User, Contact, db, DATABASE_URL, BlogPost, Comment
@@ -68,6 +68,11 @@ def admin_only(f):
         return f(*args, **kwargs)
 
     return decorated_function
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 @app.context_processor
@@ -227,46 +232,6 @@ def contact_success():
     return render_template("contact.html", msg_sent=True, form=form)
 
 
-# OAuth routes
-@app.route('/start-auth')
-def start_auth():
-    auth_url, state = account.con.get_authorization_url(redirect_uri=redirect_uri)
-    session['oauth_state'] = state
-    return redirect(auth_url)
-
-
-@app.route('/oauth/callback')
-def oauth_callback():
-    code = request.args.get('code')
-    if code:
-        logger.debug(f"Received OAuth callback with code: {code}")
-
-        credentials = (os.environ['CLIENT_365_ID'], os.environ['CLIENT_365_SECRET'])
-        token_backend = FileSystemTokenBackend(token_path='.', token_filename='o365_token.txt')
-
-        # Create the Account instance with the token backend
-        account = Account(credentials, token_backend=token_backend)
-
-        if account.authenticate(code=code, redirect_uri=redirect_uri):
-            logger.debug("Account is authenticated.")
-            flash('You have been successfully authenticated with Microsoft 365.')
-            return redirect(url_for('home'))
-        else:
-            logger.error("Failed to authenticate the account with Microsoft 365.")
-            flash('Authentication with Microsoft 365 failed during token exchange.')
-            return redirect(url_for('error_page'))
-    else:
-        logger.error("No authorization code was provided in the OAuth callback.")
-        flash('Failed to authenticate with Microsoft 365. No authorization code was provided.')
-        return redirect(url_for('home'))
-
-
-@app.route('/error')
-def error_page():
-    # You can pass more context or use a flash message to display the error details
-    return render_template('error.html')
-
-
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -320,6 +285,49 @@ def logged_in():
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
+
+@app.route('/start-auth')
+def start_auth():
+    auth_url, state = account.con.get_authorization_url(
+        requested_scopes=['offline_access', 'User.Read', 'Mail.ReadWrite', 'Mail.Send'],
+        redirect_uri=redirect_uri
+    )
+    session['oauth_state'] = state
+    return redirect(auth_url)
+
+
+@app.route('/callback')
+def oauth_callback():
+    state = session.get('oauth_state')
+    code = request.args.get('code')
+    if code:
+        logger.debug(f"Received OAuth callback with code: {code}")
+
+        credentials = (os.environ['CLIENT_365_ID'], os.environ['CLIENT_365_SECRET'])
+        token_backend = FileSystemTokenBackend(token_path='.', token_filename='o365_token.txt')
+
+        # Create the Account instance with the token backend
+        account = Account(credentials, token_backend=token_backend)
+
+        if account.authenticate(code=code, redirect_uri=redirect_uri):
+            logger.debug("Account is authenticated.")
+            flash('You have been successfully authenticated with Microsoft 365.')
+            return redirect(url_for('home'))
+        else:
+            logger.error("Failed to authenticate the account with Microsoft 365.")
+            flash('Authentication with Microsoft 365 failed during token exchange.')
+            return redirect(url_for('error_page'))
+    else:
+        logger.error("No authorization code was provided in the OAuth callback.")
+        flash('Failed to authenticate with Microsoft 365. No authorization code was provided.')
+        return redirect(url_for('home'))
+
+
+@app.route('/error')
+def error_page():
+    # You can pass more context or use a flash message to display the error details
+    return render_template('error.html')
 
 
 if __name__ == '__main__':
