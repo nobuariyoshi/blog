@@ -16,6 +16,7 @@ from email.mime.text import MIMEText
 from email_utils import send_message_email
 import logging
 from sqlalchemy.sql import text
+import hashlib
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -55,7 +56,7 @@ account = Account(credentials, token_backend=token_backend)
 
 def gravatar(email, size=100, default='identicon', rating='g'):
     url = 'https://www.gravatar.com/avatar/'
-    hash = md5(email.lower().encode('utf-8')).hexdigest()
+    hash = hashlib.md5(email.lower().encode('utf-8')).hexdigest()
     return f'{url}{hash}?s={size}&d={default}&r={rating}'
 
 
