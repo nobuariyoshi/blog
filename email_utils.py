@@ -44,15 +44,13 @@ except requests.exceptions.RequestException as e:
     logger.exception("An error occurred while requesting the token")
 
 
-def send_message_email(name, email, phone, message):
+def send_message_email(name, email, message):
     # Format the email content with user's details
-    mail_text = f"Name: {name}\nEmail: {email}\nPhone: {phone}\nMessage: {message}"
     html_content = f"""
     <html>
     <body>
         <p>Name: {name}</p>
         <p>Email: {email}</p>
-        <p>Phone: {phone}</p>
         <p>Message: {message}</p>
     </body>
     </html>
@@ -89,55 +87,6 @@ def send_message_email(name, email, phone, message):
 
         if response.status_code == 202:
             logger.info(f"Email sent to: {my_email}")
-        else:
-            logger.exception(f"Email not sent to: {my_email}")
-
-    except requests.exceptions.RequestException as e:
-        logger.exception("An error occurred while sending the email")
-    return True
-
-
-def send_chat_email(chat):
-    # Format the email content with chat content
-    html_content = f"""
-    <html>
-    <body>
-        <p>Chat:</p>
-        <p>{chat}</p>
-    </body>
-    </html>
-    """
-
-    request_body = {
-        'message': {
-            'toRecipients': [
-                {
-                    'emailAddress': {
-                        'address': my_email
-                    }
-                }
-            ],
-            "body": {
-                "contentType": "html",
-                "content": html_content
-            },
-            'importance': 'normal',
-        }
-    }
-
-    headers = {
-        'Authorization': 'Bearer ' + result['access_token']
-    }
-
-    GRAPH_ENDPOINT = 'https://graph.microsoft.com/v1.0'
-    endpoint = GRAPH_ENDPOINT + '/me/sendMail'
-
-    try:
-        response = requests.post(endpoint, headers=headers, json=request_body)
-        response.raise_for_status()  # Raise an exception if request fails
-
-        if response.status_code == 202:
-            logger.info(f"Email sent to: {my_email} regarding chat content.")
         else:
             logger.exception(f"Email not sent to: {my_email}")
 
