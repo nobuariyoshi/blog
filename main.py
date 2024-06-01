@@ -12,6 +12,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from flask_ckeditor import CKEditor
 from database import User, Contact, db, DATABASE_URL, BlogPost, Comment
 from flask_migrate import Migrate
+from email.mime.text import MIMEText
 
 # Load environment variables
 load_dotenv(os.path.expanduser('~/config/.env'))
@@ -32,8 +33,19 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 # Email configuration
-MY_EMAIL = os.environ["MY_EMAIL"]
-MY_EMAIL_PASSWORD = os.environ["GOOGLE_APP_PASSWORD"]
+
+
+def send_email(name, email, message):
+    email_message = f"Subject: New Message\n\nName: {name}\nEmail: {email}\nMessage: {message}"
+    msg = MIMEText(email_message)
+    msg['From'] = os.environ["MY_EMAIL"]
+    msg['To'] = os.environ["MY_EMAIL"]
+    msg['Subject'] = 'New Message'
+
+    with smtplib.SMTP(os.environ["SMTP_SERVER"], os.environ["SMTP_PORT"]) as connection:
+        if os.environ.get("SMTP_USE_TLS") == "True":
+            connection.starttls()
+        connection.sendmail(os.environ["MY_EMAIL"], os.environ["MY_EMAIL"], msg.as_string())
 
 
 def gravatar(email, size=100, default='identicon', rating='g'):
@@ -43,14 +55,6 @@ def gravatar(email, size=100, default='identicon', rating='g'):
 
 
 app.jinja_env.filters['gravatar'] = gravatar
-
-
-def send_email(name, email, message):
-    email_message = f"Subject:New Message\n\nName: {name}\nEmail: {email}\nMessage:{message}"
-    with smtplib.SMTP("smtp.gmail.com") as connection:
-        connection.starttls()
-        connection.login(MY_EMAIL, MY_EMAIL_PASSWORD)
-        connection.sendmail(MY_EMAIL, MY_EMAIL, email_message)
 
 
 # Create admin-only decorator
