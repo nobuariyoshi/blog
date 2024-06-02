@@ -189,7 +189,7 @@ def edit_post(post_id):
         post.subtitle = form.subtitle.data
         post.img_url = form.img_url.data
         post.body = form.body.data
-        post.date = datetime.now()  # Update the date to the current time
+        post.last_edited = datetime.now()  # Update the last edited date
         try:
             db.session.commit()
             return redirect(url_for("show_post", post_id=post.id))
@@ -198,6 +198,7 @@ def edit_post(post_id):
             print(f"Error editing post: {e}")
             flash("投稿の修正中にエラーが発生しました。もう一度お試しください。")
     return render_template("make-post.html", form=form, is_edit=True, post=post)
+
 
 
 @app.route("/blog/delete/<int:post_id>")

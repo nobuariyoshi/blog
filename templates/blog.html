@@ -30,7 +30,10 @@
                 <p class="post-meta">
                     Posted by
                     <a href="#">{{ item.author_first_name }} {{ item.author_last_name }}</a>
-                    on {{ item.post.date.strftime('%B %d, %Y') if item.post.date is not string else item.post.date }}
+                    on {{ item.post.date.strftime('%B %d, %Y') }}
+                    {% if item.post.last_edited %}
+                    | Edited on {{ item.post.last_edited.strftime('%B %d, %Y') }}
+                    {% endif %}
                     {% if current_user.is_authenticated and current_user.id == 1 %}
                     <a href="{{ url_for('delete_post', post_id=item.post.id) }}">✘</a>
                     {% endif %}
@@ -52,4 +55,5 @@
         </div>
     </div>
 </div>
+<hr>
 {% endblock %}

@@ -30,10 +30,13 @@
         <p class="post-meta">
           Posted by
           <a href="#">{{ post.author.first_name }} {{ post.author.last_name }}</a>
-          on {{post.date}}
+          on {{ post.date.strftime('%B %d, %Y') }}
+          {% if post.last_edited %}
+          | Edited on {{ post.last_edited.strftime('%B %d, %Y') }}
+          {% endif %}
           <!-- Only show delete button if user id is 1 (admin user) -->
-          {% if current_user.id == 1: %}
-          <a href="{{url_for('delete_post', post_id=post.id) }}">✘</a>
+          {% if current_user.id == 1 %}
+          <a href="{{ url_for('delete_post', post_id=post.id) }}">✘</a>
           {% endif %}
         </p>
       </div>
@@ -43,19 +46,15 @@
 
       <!-- New Post -->
       <!-- Only show Create Post button if user id is 1 (admin user) -->
-      {% if current_user.id == 1: %}
+      {% if current_user.id == 1 %}
       <div class="d-flex justify-content-end mb-4">
-        <a
-          class="btn btn-primary float-right"
-          href="{{url_for('add_new_post')}}"
-          >Create New Post</a
-        >
+        <a class="btn btn-primary float-right" href="{{ url_for('add_new_post') }}">Create New Post</a>
       </div>
       {% endif %}
 
       <!-- Pager-->
       <div class="d-flex justify-content-end mb-4">
-        <a class="btn btn-secondary text-uppercase" href="{{url_for('get_blog')}}">もっと見る →</a>
+        <a class="btn btn-secondary text-uppercase" href="{{ url_for('get_blog') }}">もっと見る →</a>
       </div>
     </div>
   </div>

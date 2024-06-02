@@ -66,13 +66,14 @@ class BlogPost(db.Model):
     id = Column(Integer, primary_key=True)
     title = Column(String(250), unique=True, nullable=False)
     subtitle = Column(String(250), nullable=False)
-    date = Column(DateTime, default=datetime.utcnow)  # Changed to DateTime, defaults to current time
+    date = Column(DateTime, default=datetime.utcnow)
+    last_edited = Column(DateTime, nullable=True)  # New field for last edited date
     body = Column(Text, nullable=False)
-    author_id = Column(Integer, ForeignKey('users.id'), nullable=False)  # ForeignKey to reference User
+    author_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     img_url = Column(String(500), nullable=False)
-    comments = relationship('Comment', backref='post', lazy=True,
-                            cascade="all, delete-orphan")  # Relationship to Comment
-    draft = Column(Boolean, default=True)  # New column to indicate draft status, defaulting to True
+    comments = relationship('Comment', backref='post', lazy=True, cascade="all, delete-orphan")
+    draft = Column(Boolean, default=True)
+
 
 
 class Comment(db.Model):
