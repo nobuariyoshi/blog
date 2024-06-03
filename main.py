@@ -96,7 +96,7 @@ def set_mysql_timeout():
 
 @app.route("/")
 def home():
-    latest_posts = BlogPost.query.order_by(BlogPost.id.desc()).limit(3).all()
+    latest_posts = BlogPost.query.order_by(BlogPost.id.desc()).limit(10).all()
     return render_template("index.html", all_posts=latest_posts)
 
 
