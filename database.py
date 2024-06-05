@@ -40,7 +40,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(256))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     posts = db.relationship('BlogPost', backref='author', lazy=True)
-    comments = db.relationship('Comment', backref='comment_author', lazy=True)  # Changed backref name
+    comments = db.relationship('Comment', backref='comment_author', lazy=True, overlaps="user_comments,comments")  # Added overlaps
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -66,7 +66,7 @@ class BlogPost(db.Model):
     body = Column(Text, nullable=False)
     author_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     img_url = Column(String(500), nullable=False)
-    comments = relationship('Comment', backref='post_comments', lazy=True, cascade="all, delete-orphan")  # Updated backref
+    comments = relationship('Comment', backref='post_comments', lazy=True, cascade="all, delete-orphan", overlaps="comments,post_comments")  # Added overlaps
     draft = Column(Boolean, default=True)
 
 class Comment(db.Model):
@@ -77,5 +77,5 @@ class Comment(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id', ondelete='CASCADE'), nullable=False)
 
-    author = db.relationship('User', backref=db.backref('user_comments', lazy=True, cascade="all, delete-orphan"))
-    post = db.relationship('BlogPost', backref=db.backref('post_comments', lazy=True, cascade="all, delete-orphan"))  # Updated backref
+    author = db.relationship('User', backref=db.backref('user_comments', lazy=True, cascade="all, delete-orphan", overlaps="comment_author,comments"))
+    post = db.relationship('BlogPost', backref=db.backref('post_comments', lazy=True, cascade="all, delete-orphan", overlaps="comments,post_comments"))  # Added overlaps
