@@ -76,12 +76,12 @@ class BlogPost(db.Model):
     draft = Column(Boolean, default=True)
 
 
-# database.py
 class Comment(db.Model):
     __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.Text, nullable=False)
     date_posted = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    name = db.Column(db.String(120), nullable=False)  # Add name field
-    email = db.Column(db.String(120), nullable=False)  # Add email field
+    name = db.Column(db.String(120), nullable=False)  # Name of the commenter
+    email = db.Column(db.String(120), nullable=False)  # Email of the commenter
     post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id', ondelete='CASCADE'), nullable=False)
+
