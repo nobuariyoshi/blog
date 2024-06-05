@@ -29,10 +29,7 @@ Base = declarative_base()
 # Initialize SQLAlchemy with the base model
 db = SQLAlchemy(model_class=Base)
 
-
 # Models
-# database.py
-# database.py
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -51,18 +48,13 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-
-
-
 class Contact(db.Model):
     __tablename__ = 'contacts'
-
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), nullable=False)
     message = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
 
 class BlogPost(db.Model):
     __tablename__ = 'blog_posts'
@@ -74,20 +66,16 @@ class BlogPost(db.Model):
     body = Column(Text, nullable=False)
     author_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     img_url = Column(String(500), nullable=False)
-    comments = relationship('Comment', backref='post', lazy=True, cascade="all, delete-orphan")
+    comments = relationship('Comment', backref='post_comments', lazy=True, cascade="all, delete-orphan")  # Updated backref
     draft = Column(Boolean, default=True)
 
-
-# database.py
-# database.py
 class Comment(db.Model):
     __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.Text, nullable=False)
     date_posted = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id', ondelete='CASCADE'), nullable=False)
-    author = db.relationship('User', backref='comments')  # Ensure this matches the backref name in User
 
-
-
+    author = db.relationship('User', backref=db.backref('user_comments', lazy=True, cascade="all, delete-orphan"))
+    post = db.relationship('BlogPost', backref=db.backref('post_comments', lazy=True, cascade="all, delete-orphan"))  # Updated backref
