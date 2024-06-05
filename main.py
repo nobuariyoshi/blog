@@ -135,13 +135,26 @@ def show_post(post_id):
     post, author_first_name, author_last_name = post_with_author
     comment_form = CommentForm()
     if comment_form.validate_on_submit():
+        name = comment_form.name.data
+        email = comment_form.email.data
         new_comment = Comment(
             text=comment_form.comment_text.data,
-            author_id=current_user.id,
-            post_id=post.id
+            post_id=post.id,
+            name=name,
+            email=email
         )
         db.session.add(new_comment)
         db.session.commit()
+
+        # Send email notification
+        send_message_email(
+            name=name,
+            email=email,
+            message=f"A new comment was posted by {name} on the post '{post.title}':\n\n{new_comment.text}"
+        )
+        flash("Comment posted successfully and email notification sent.")
+        return redirect(url_for('show_post', post_id=post.id))
+
     comments = Comment.query.filter_by(post_id=post.id).all()
     post_data = {
         'post': post,

@@ -36,8 +36,6 @@
         {% endif %}
 
         <!-- Comments Area -->
-        {{ ckeditor.load() }}
-        {{ ckeditor.config(name='comment_text') }}
         {{ render_form(form, novalidate=True, button_map={"submit": "primary"}) }}
         <div class="comment">
           <ul class="commentList">
@@ -45,11 +43,11 @@
             {% for comment in comments %}
             <li>
               <div class="commenterImage">
-                <img src="{{ comment.author.email | gravatar }}" />
+                <img src="{{ comment.email | gravatar }}" />
               </div>
               <div class="commentText">
                 <p class="comment">{{ comment.text | safe }}</p>
-                <span class="sub-text">{{ comment.author.first_name }} {{ comment.author.last_name }}</span>
+                <span class="sub-text">{{ comment.name }}</span>
               </div>
             </li>
             {% endfor %}

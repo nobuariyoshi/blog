@@ -38,6 +38,8 @@ class CreatePostForm(FlaskForm):
 
 
 class CommentForm(FlaskForm):
-    comment_text = CKEditorField("Comment", validators=[DataRequired()])
-    submit = SubmitField("コメントを投稿する")
+    name = StringField("Name", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    comment_text = TextAreaField("Comment", validators=[DataRequired()])
+    submit = SubmitField("Submit Comment")
 

@@ -29,6 +29,7 @@ Base = declarative_base()
 # Initialize SQLAlchemy with the base model
 db = SQLAlchemy(model_class=Base)
 
+
 # Models
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -75,12 +76,12 @@ class BlogPost(db.Model):
     draft = Column(Boolean, default=True)
 
 
-
+# database.py
 class Comment(db.Model):
     __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(Text, nullable=False)
-    date_posted = db.Column(DateTime, default=datetime.utcnow, nullable=False)
-    author_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)  # Add ForeignKey to reference User
-    post_id = db.Column(db.Integer, ForeignKey('blog_posts.id', ondelete='CASCADE'),
-                        nullable=False)  # Add ForeignKey to reference BlogPost
+    text = db.Column(db.Text, nullable=False)
+    date_posted = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    name = db.Column(db.String(120), nullable=False)  # Add name field
+    email = db.Column(db.String(120), nullable=False)  # Add email field
+    post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id', ondelete='CASCADE'), nullable=False)
