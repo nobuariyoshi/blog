@@ -32,6 +32,7 @@ db = SQLAlchemy(model_class=Base)
 
 # Models
 # database.py
+# database.py
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -42,13 +43,14 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(256))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     posts = db.relationship('BlogPost', backref='author', lazy=True)
-    comments = db.relationship('Comment', backref='author', lazy=True)
+    comments = db.relationship('Comment', backref='comment_author', lazy=True)  # Changed backref name
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+
 
 
 
@@ -77,6 +79,7 @@ class BlogPost(db.Model):
 
 
 # database.py
+# database.py
 class Comment(db.Model):
     __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True)
@@ -84,6 +87,7 @@ class Comment(db.Model):
     date_posted = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id', ondelete='CASCADE'), nullable=False)
-    author = db.relationship('User', backref='comments')
+    author = db.relationship('User', backref='comments')  # Ensure this matches the backref name in User
+
 
 
