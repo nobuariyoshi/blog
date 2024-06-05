@@ -39,5 +39,5 @@ class CreatePostForm(FlaskForm):
 
 class CommentForm(FlaskForm):
     comment_text = TextAreaField("Comment", validators=[DataRequired()])
-    submit = SubmitField("Submit Comment")
+    submit = SubmitField("コメントを投稿する")
 
