@@ -4,7 +4,7 @@
 {% block title %}{{ post.title }}{% endblock %}
 
 {% block header %}
-<header class="masthead" style="background-image: url('{{ post.img_url }}')">
+<header class="masthead" style="background-image: url('{{ post.img_url if post.img_url else url_for('static', filename='static/images/hawaii.png') }}')">
   <div class="container position-relative px-4 px-lg-5">
     <div class="row gx-4 gx-lg-5 justify-content-center">
       <div class="col-md-10 col-lg-8 col-xl-7">
@@ -28,11 +28,26 @@
     <div class="row gx-4 gx-lg-5 justify-content-center">
       <div class="col-md-10 col-lg-8 col-xl-7">
         {{ post.body | safe }}
+        <!-- Only show Edit Post button if user id is 1 (admin user) -->
+        {% if current_user.id == 1 %}
+        <div class="d-flex justify-content-end mb-4">
+          <a class="btn btn-primary float-right" href="{{ url_for('edit_post', post_id=post.id) }}">Edit Post</a>
+        </div>
+        {% endif %}
 
-        <!-- Comments Section -->
-        <div class="comments-section">
-          <h3>Comments</h3>
+        <!-- Comments Area -->
+        <div class="comment">
+          <h2 class="section-heading">Comments</h2>
+          {% if current_user.is_authenticated %}
+          {{ ckeditor.load() }}
+          {{ ckeditor.config(name='comment_text') }}
+          {{ render_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+          {% else %}
+          <p>You need to <a href="{{ url_for('login') }}">login</a> to post a comment.</p>
+          {% endif %}
+
           <ul class="commentList">
+            <!-- Show all comments -->
             {% for comment in comments %}
             <li>
               <div class="commenterImage">
@@ -45,15 +60,6 @@
             </li>
             {% endfor %}
           </ul>
-        </div>
-
-        <!-- Comment Form -->
-        <div class="comment-form">
-          {% if current_user.is_authenticated %}
-            {{ render_form(form, novalidate=True, button_map={"submit": "primary"}) }}
-          {% else %}
-            <p>You need to <a href="{{ url_for('login') }}">login</a> to post a comment.</p>
-          {% endif %}
         </div>
       </div>
     </div>
