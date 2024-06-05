@@ -43,7 +43,7 @@
           {{ ckeditor.config(name='comment_text') }}
           {{ render_form(form, novalidate=True, button_map={"submit": "primary"}) }}
           {% else %}
-          <p>You need to <a href="{{ url_for('login') }}">login</a> to post a comment.</p>
+            <p>コメントを投稿するには<a href="{{ url_for('login') }}">ログイン</a>が必要です。</p>
           {% endif %}
 
           <ul class="commentList">
