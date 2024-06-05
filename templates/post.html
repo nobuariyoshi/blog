@@ -37,7 +37,7 @@
 
         <!-- Comments Area -->
         <div class="comment">
-          <h2 class="section-heading">Comments</h2>
+          <h2 class="section-heading">コメント</h2>
           {% if current_user.is_authenticated %}
           {{ ckeditor.load() }}
           {{ ckeditor.config(name='comment_text') }}
