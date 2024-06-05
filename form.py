@@ -38,8 +38,6 @@ class CreatePostForm(FlaskForm):
 
 
 class CommentForm(FlaskForm):
-    name = StringField("Name", validators=[DataRequired()])
-    email = StringField("Email", validators=[DataRequired(), Email()])
     comment_text = TextAreaField("Comment", validators=[DataRequired()])
     submit = SubmitField("Submit Comment")
 

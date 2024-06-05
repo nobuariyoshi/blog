@@ -31,25 +31,25 @@ db = SQLAlchemy(model_class=Base)
 
 
 # Models
+# database.py
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
-    username = Column(String(25), unique=True, nullable=False)
-    email = Column(String(50), unique=True, nullable=False)
-    first_name = Column(String(50))  # New
-    last_name = Column(String(50))  # New
-    password = Column(String(256))
-    created_at = Column(DateTime, default=datetime.utcnow)
-    # Add a relationship to BlogPost
-    posts = relationship('BlogPost', backref='author', lazy=True)
-    # Add a relationship to Comment
-    comments = relationship('Comment', backref='author', lazy=True)
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(25), unique=True, nullable=False)
+    email = db.Column(db.String(50), unique=True, nullable=False)
+    first_name = db.Column(db.String(50))
+    last_name = db.Column(db.String(50))
+    password = db.Column(db.String(256))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    posts = db.relationship('BlogPost', backref='author', lazy=True)
+    comments = db.relationship('Comment', backref='author', lazy=True)
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+
 
 
 class Contact(db.Model):
@@ -76,12 +76,14 @@ class BlogPost(db.Model):
     draft = Column(Boolean, default=True)
 
 
+# database.py
 class Comment(db.Model):
     __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.Text, nullable=False)
     date_posted = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    name = db.Column(db.String(120), nullable=False)  # Name of the commenter
-    email = db.Column(db.String(120), nullable=False)  # Email of the commenter
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id', ondelete='CASCADE'), nullable=False)
+    author = db.relationship('User', backref='comments')
+
 

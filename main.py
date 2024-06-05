@@ -134,23 +134,20 @@ def show_post(post_id):
         return "Post not found", 404
     post, author_first_name, author_last_name = post_with_author
     comment_form = CommentForm()
-    if comment_form.validate_on_submit():
-        name = comment_form.name.data
-        email = comment_form.email.data
+    if comment_form.validate_on_submit() and current_user.is_authenticated:
         new_comment = Comment(
             text=comment_form.comment_text.data,
-            post_id=post.id,
-            name=name,
-            email=email
+            author_id=current_user.id,
+            post_id=post.id
         )
         db.session.add(new_comment)
         db.session.commit()
 
         # Send email notification
         send_message_email(
-            name=name,
-            email=email,
-            message=f"A new comment was posted by {name} on the post '{post.title}':\n\n{new_comment.text}"
+            name=current_user.username,
+            email=current_user.email,
+            message=f"A new comment was posted by {current_user.username} on the post '{post.title}':\n\n{new_comment.text}"
         )
         flash("Comment posted successfully and email notification sent.")
         return redirect(url_for('show_post', post_id=post.id))
@@ -162,6 +159,7 @@ def show_post(post_id):
         'author_last_name': author_last_name
     }
     return render_template("post.html", post=post, post_data=post_data, form=comment_form, comments=comments)
+
 
 
 @app.route("/new-post", methods=["GET", "POST"])
