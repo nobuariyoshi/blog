@@ -26,11 +26,6 @@ logger = logging.getLogger(__name__)
 # Load environment variables
 load_dotenv(os.path.expanduser('~/config/.env'))
 
-# Ensure the upload directory exists
-UPLOAD_FOLDER = 'uploads'
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
-
 # Database and Flask-Login configuration
 app = Flask(__name__)
 csrf = CSRFProtect(app)
@@ -42,19 +37,17 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_POOL_RECYCLE'] = 28000  # Recycle connections every 28000 seconds
 app.config['SQLALCHEMY_POOL_TIMEOUT'] = 20  # Timeout for getting a connection from the pool
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
+app.config['UPLOAD_FOLDER'] = 'uploads'
 
 # Ensure the upload directory exists
 def ensure_upload_directory_exists():
-    if not os.path.exists(app.config['UPLOADED_PATH']):
+    if not os.path.exists(app.config['UPLOAD_FOLDER']):
         try:
-            os.makedirs(app.config['UPLOADED_PATH'])
-            os.chmod(app.config['UPLOADED_PATH'], 0o755)
+            os.makedirs(app.config['UPLOAD_FOLDER'])
+            os.chmod(app.config['UPLOAD_FOLDER'], 0o755)
         except Exception as e:
             logger.error(f"Error creating upload directory: {e}")
             raise
-
 
 ensure_upload_directory_exists()
 
@@ -82,7 +75,6 @@ def gravatar(email, size=100, default='identicon', rating='g'):
     hash = hashlib.md5(email.lower().encode('utf-8')).hexdigest()
     return f'{url}{hash}?s={size}&d={default}&r={rating}'
 
-
 app.jinja_env.filters['gravatar'] = gravatar
 
 
@@ -93,7 +85,6 @@ def admin_only(f):
         if current_user.id != 1:
             return abort(403)
         return f(*args, **kwargs)
-
     return decorated_function
 
 
@@ -132,9 +123,7 @@ def about():
 def get_blog():
     page = request.args.get('page', 1, type=int)
     per_page = 10
-    paginated_posts = db.session.query(BlogPost, User.first_name, User.last_name).join(User,
-                                                                                       BlogPost.author_id == User.id).order_by(
-        BlogPost.id.desc()).paginate(page=page, per_page=per_page, error_out=False)
+    paginated_posts = db.session.query(BlogPost, User.first_name, User.last_name).join(User, BlogPost.author_id == User.id).order_by(BlogPost.id.desc()).paginate(page=page, per_page=per_page, error_out=False)
 
     posts_data = [{
         'post': post,
@@ -150,9 +139,7 @@ def get_blog():
 
 @app.route("/blog/post/<int:post_id>", methods=['GET', 'POST'])
 def show_post(post_id):
-    post_with_author = db.session.query(BlogPost, User.first_name, User.last_name).join(User,
-                                                                                        BlogPost.author_id == User.id).filter(
-        BlogPost.id == post_id).first()
+    post_with_author = db.session.query(BlogPost, User.first_name, User.last_name).join(User, BlogPost.author_id == User.id).filter(BlogPost.id == post_id).first()
     if not post_with_author:
         return "Post not found", 404
     post, author_first_name, author_last_name = post_with_author
@@ -381,19 +368,11 @@ def error_page():
 def upload():
     f = request.files.get('upload')
     if not f:
-        return {
-            'uploaded': False,
-            'error': {
-                'message': 'No file uploaded'
-            }
-        }, 400  # Return 400 status code if no file is uploaded
+        return upload_fail('No file uploaded')
     filename = secure_filename(f.filename)
     f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     url = url_for('uploaded_files', filename=filename)
-    return {
-        'uploaded': True,
-        'url': url
-    }
+    return upload_success(url)
 
 
 @app.route('/uploads/<filename>')
