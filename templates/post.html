@@ -65,4 +65,14 @@
     </div>
   </div>
 </article>
+
+<!-- CKEditor Configuration -->
+<script>
+  CKEDITOR.replace('comment_text', {
+    extraPlugins: 'uploadimage,image2,pastefromword',
+    height: 300,
+    filebrowserUploadUrl: '{{ url_for("upload") }}',
+    filebrowserUploadMethod: 'form',
+  });
+</script>
 {% endblock %}

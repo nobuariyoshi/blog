@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, abort, g
+from flask import Flask, render_template, request, redirect, url_for, flash, session, abort, g, send_from_directory
 from flask_bootstrap import Bootstrap5
 from flask_wtf.csrf import CSRFProtect
 from functools import wraps
@@ -6,10 +6,11 @@ from datetime import datetime
 import os
 from O365 import Account, FileSystemTokenBackend
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from form import ContactForm, RegisterForm, LoginForm, CreatePostForm, CommentForm
 from dotenv import load_dotenv
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from flask_ckeditor import CKEditor
+from flask_ckeditor import CKEditor, upload_success, upload_fail
 from database import User, Contact, db, DATABASE_URL, BlogPost, Comment
 from flask_migrate import Migrate
 from email.mime.text import MIMEText
@@ -30,11 +31,27 @@ app = Flask(__name__)
 csrf = CSRFProtect(app)
 app.secret_key = os.environ["FLASK_SECRET_KEY"]
 ckeditor = CKEditor(app)
+app.config['CKEDITOR_FILE_UPLOADER'] = 'upload'
 bootstrap = Bootstrap5(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_POOL_RECYCLE'] = 28000  # Recycle connections every 28000 seconds
 app.config['SQLALCHEMY_POOL_TIMEOUT'] = 20  # Timeout for getting a connection from the pool
+app.config['UPLOADED_PATH'] = os.path.join(os.path.dirname(__file__), 'uploads')
+
+
+# Ensure the upload directory exists
+def ensure_upload_directory_exists():
+    if not os.path.exists(app.config['UPLOADED_PATH']):
+        try:
+            os.makedirs(app.config['UPLOADED_PATH'])
+            os.chmod(app.config['UPLOADED_PATH'], 0o755)
+        except Exception as e:
+            logger.error(f"Error creating upload directory: {e}")
+            raise
+
+
+ensure_upload_directory_exists()
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -54,6 +71,7 @@ credentials = (client_id, client_secret)
 account = Account(credentials, token_backend=token_backend)
 
 
+# Gravatar function
 def gravatar(email, size=100, default='identicon', rating='g'):
     url = 'https://www.gravatar.com/avatar/'
     hash = hashlib.md5(email.lower().encode('utf-8')).hexdigest()
@@ -63,7 +81,7 @@ def gravatar(email, size=100, default='identicon', rating='g'):
 app.jinja_env.filters['gravatar'] = gravatar
 
 
-# Create admin-only decorator
+# Admin-only decorator
 def admin_only(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -161,7 +179,6 @@ def show_post(post_id):
     return render_template("post.html", post=post, post_data=post_data, form=comment_form, comments=comments)
 
 
-
 @app.route("/new-post", methods=["GET", "POST"])
 @login_required
 @admin_only
@@ -209,7 +226,6 @@ def edit_post(post_id):
             print(f"Error editing post: {e}")
             flash("投稿の修正中にエラーが発生しました。もう一度お試しください。")
     return render_template("make-post.html", form=form, is_edit=True, post=post)
-
 
 
 @app.route("/blog/delete/<int:post_id>")
@@ -353,6 +369,24 @@ def oauth_callback():
 @app.route('/error')
 def error_page():
     return render_template('error.html')
+
+
+# Route to handle file uploads for CKEditor
+@app.route('/upload', methods=['POST'])
+def upload():
+    f = request.files.get('upload')
+    if not f:
+        return upload_fail('No file')  # Handle the error case
+    filename = secure_filename(f.filename)
+    filepath = os.path.join(app.config['UPLOADED_PATH'], filename)
+    f.save(filepath)
+    url = url_for('uploaded_files', filename=filename)
+    return upload_success(url)
+
+
+@app.route('/uploaded_files/<filename>')
+def uploaded_files(filename):
+    return send_from_directory(app.config['UPLOADED_PATH'], filename)
 
 
 if __name__ == '__main__':
