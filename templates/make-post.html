@@ -48,7 +48,7 @@
                         {% endif %}
                     </div>
                     <div class="mb-3">
-                        <label for="body">Content</label>
+                        <label for="editor">Content</label>
                         {{ form.body(class="form-control", id="editor", placeholder="Enter the content...", style="height: 12rem") }}
                         {% if form.body.errors %}
                         <div class="invalid-feedback d-block">{{ form.body.errors[0] }}</div>
@@ -61,10 +61,7 @@
     </div>
 </main>
 
-<!-- CKEditor JavaScript Library -->
-<script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
-
-<!-- CKEditor Configuration -->
+<!-- CKEditor Initialization -->
 <script>
   CKEDITOR.replace('editor', {
     extraPlugins: 'uploadimage,image2,pastefromword',
