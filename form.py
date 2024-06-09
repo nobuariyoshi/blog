@@ -28,7 +28,6 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 
-
 class CreatePostForm(FlaskForm):
     title = StringField("Blog Post Title", validators=[DataRequired()])
     subtitle = StringField("Subtitle", validators=[DataRequired()])
@@ -40,4 +39,3 @@ class CreatePostForm(FlaskForm):
 class CommentForm(FlaskForm):
     comment_text = TextAreaField("Comment", validators=[DataRequired()])
     submit = SubmitField("コメントを投稿する")
-
