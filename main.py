@@ -42,7 +42,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_POOL_RECYCLE'] = 28000  # Recycle connections every 28000 seconds
 app.config['SQLALCHEMY_POOL_TIMEOUT'] = 20  # Timeout for getting a connection from the pool
-app.config['UPLOADED_PATH'] = os.path.join(os.path.dirname(__file__), 'uploads')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
 # Ensure the upload directory exists
@@ -386,7 +386,7 @@ def upload():
             'error': {
                 'message': 'No file uploaded'
             }
-        }
+        }, 400  # Return 400 status code if no file is uploaded
     filename = secure_filename(f.filename)
     f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     url = url_for('uploaded_files', filename=filename)
