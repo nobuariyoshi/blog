@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, abort, g, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, flash, session, abort, g, send_from_directory, jsonify
 from flask_bootstrap import Bootstrap5
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, generate_csrf
 from functools import wraps
 from datetime import datetime
 import os
@@ -10,7 +10,7 @@ from werkzeug.utils import secure_filename
 from form import ContactForm, RegisterForm, LoginForm, CreatePostForm, CommentForm
 from dotenv import load_dotenv
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from flask_ckeditor import CKEditor, upload_success, upload_fail
+from flask_ckeditor import CKEditor
 from database import User, Contact, db, DATABASE_URL, BlogPost, Comment
 from flask_migrate import Migrate
 from email.mime.text import MIMEText
@@ -96,7 +96,7 @@ def load_user(user_id):
 @app.context_processor
 def inject_user():
     year = datetime.now().year
-    return dict(logged_in=current_user.is_authenticated, year=year)
+    return dict(logged_in=current_user.is_authenticated, year=year, csrf_token=generate_csrf())
 
 
 @app.before_request
@@ -365,14 +365,23 @@ def error_page():
 
 # Route to handle file uploads for CKEditor
 @app.route('/upload', methods=['POST'])
+@csrf.exempt  # Disable CSRF for this route to avoid CSRF token errors
 def upload():
     f = request.files.get('upload')
     if not f:
-        return upload_fail('No file uploaded')
+        return {
+            'uploaded': False,
+            'error': {
+                'message': 'No file uploaded'
+            }
+        }, 400  # Return 400 status code if no file is uploaded
     filename = secure_filename(f.filename)
     f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     url = url_for('uploaded_files', filename=filename)
-    return upload_success(url)
+    return {
+        'uploaded': True,
+        'url': url
+    }
 
 
 @app.route('/uploads/<filename>')

@@ -62,18 +62,18 @@
 </main>
 
 <!-- CKEditor Initialization -->
-<script>
-  ClassicEditor
-    .create(document.querySelector('#editor'), {
-        ckfinder: {
-            uploadUrl: '{{ url_for("upload") }}'
-        }
-    })
-    .then(editor => {
-        console.log(editor);
-    })
-    .catch(error => {
-        console.error(error);
-    });
-</script>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#editor'), {
+                simpleUpload: {
+                    uploadUrl: '{{ url_for("upload") }}',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
 {% endblock %}
