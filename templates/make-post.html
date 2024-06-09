@@ -64,7 +64,11 @@
 <!-- CKEditor Initialization -->
 <script>
   ClassicEditor
-    .create(document.querySelector('#editor'))
+    .create(document.querySelector('#editor'), {
+        ckfinder: {
+            uploadUrl: '{{ url_for("upload") }}'
+        }
+    })
     .then(editor => {
         console.log(editor);
     })

@@ -376,17 +376,24 @@ def error_page():
 def upload():
     f = request.files.get('upload')
     if not f:
-        return upload_fail('No file')  # Handle the error case
+        return {
+            'uploaded': False,
+            'error': {
+                'message': 'No file uploaded'
+            }
+        }
     filename = secure_filename(f.filename)
-    filepath = os.path.join(app.config['UPLOADED_PATH'], filename)
-    f.save(filepath)
+    f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     url = url_for('uploaded_files', filename=filename)
-    return upload_success(url)
+    return {
+        'uploaded': True,
+        'url': url
+    }
 
 
-@app.route('/uploaded_files/<filename>')
+@app.route('/uploads/<filename>')
 def uploaded_files(filename):
-    return send_from_directory(app.config['UPLOADED_PATH'], filename)
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
 if __name__ == '__main__':
