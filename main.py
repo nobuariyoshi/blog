@@ -26,6 +26,11 @@ logger = logging.getLogger(__name__)
 # Load environment variables
 load_dotenv(os.path.expanduser('~/config/.env'))
 
+# Ensure the upload directory exists
+UPLOAD_FOLDER = 'uploads'
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
 # Database and Flask-Login configuration
 app = Flask(__name__)
 csrf = CSRFProtect(app)
