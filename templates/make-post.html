@@ -86,7 +86,7 @@
             const xhr = this.xhr = new XMLHttpRequest();
             xhr.open('POST', '{{ url_for("upload") }}', true);
             xhr.responseType = 'json';
-            xhr.setRequestHeader('X-CSRF-TOKEN', '{{ form.csrf_token._value() }}');
+            xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token }}');
         }
 
         _initListeners(resolve, reject, file) {
