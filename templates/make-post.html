@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% from "bootstrap5/form.html" import render_form %}
 
 {% block title %}{% if is_edit %}Edit Post{% else %}New Post{% endif %}{% endblock %}
@@ -24,7 +23,6 @@
     <div class="container">
         <div class="row gx-4 gx-lg-5 justify-content-center">
             <div class="col-md-10 col-lg-8 col-xl-7">
-                {{ ckeditor.load() }}
                 <form method="POST" enctype="multipart/form-data" action="{{ url_for('add_new_post') if not is_edit else url_for('edit_post', post_id=post.id) }}" novalidate>
                     {{ form.hidden_tag() }}
                     <div class="form-floating mb-3">
@@ -68,12 +66,11 @@
     ClassicEditor
         .create(document.querySelector('#editor'), {
             simpleUpload: {
-                uploadUrl: '{{ url_for('upload') }}',
+                uploadUrl: '{{ url_for("upload") }}',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token }}'
                 }
-            },
-            extraPlugins: [ 'SimpleUploadAdapter', 'PasteFromOffice' ]
+            }
         })
         .catch(error => {
             console.error(error);
