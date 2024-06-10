@@ -70,7 +70,7 @@
             simpleUpload: {
                 uploadUrl: '{{ url_for('upload') }}',
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': '{{ csrf_token }}'
                 }
             },
             extraPlugins: [ 'SimpleUploadAdapter', 'PasteFromOffice' ]
