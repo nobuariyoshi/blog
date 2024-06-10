@@ -27,7 +27,6 @@
   <div class="container px-4 px-lg-5">
     <div class="row gx-4 gx-lg-5 justify-content-center">
       <div class="col-md-10 col-lg-8 col-xl-7">
-        <!-- Ensure the body content is rendered as HTML -->
         {{ post.body | safe }}
         <!-- Only show Edit Post button if user id is 1 (admin user) -->
         {% if current_user.id == 1 %}

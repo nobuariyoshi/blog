@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, abort, g, send_from_directory, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, session, abort, g, send_from_directory, \
+    jsonify
 from flask_bootstrap import Bootstrap5
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 from functools import wraps
@@ -39,6 +40,7 @@ app.config['SQLALCHEMY_POOL_RECYCLE'] = 28000  # Recycle connections every 28000
 app.config['SQLALCHEMY_POOL_TIMEOUT'] = 20  # Timeout for getting a connection from the pool
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
+
 # Ensure the upload directory exists
 def ensure_upload_directory_exists():
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
@@ -48,6 +50,7 @@ def ensure_upload_directory_exists():
         except Exception as e:
             logger.error(f"Error creating upload directory: {e}")
             raise
+
 
 ensure_upload_directory_exists()
 
@@ -75,6 +78,7 @@ def gravatar(email, size=100, default='identicon', rating='g'):
     hash = hashlib.md5(email.lower().encode('utf-8')).hexdigest()
     return f'{url}{hash}?s={size}&d={default}&r={rating}'
 
+
 app.jinja_env.filters['gravatar'] = gravatar
 
 
@@ -85,6 +89,7 @@ def admin_only(f):
         if current_user.id != 1:
             return abort(403)
         return f(*args, **kwargs)
+
     return decorated_function
 
 
@@ -123,7 +128,9 @@ def about():
 def get_blog():
     page = request.args.get('page', 1, type=int)
     per_page = 10
-    paginated_posts = db.session.query(BlogPost, User.first_name, User.last_name).join(User, BlogPost.author_id == User.id).order_by(BlogPost.id.desc()).paginate(page=page, per_page=per_page, error_out=False)
+    paginated_posts = db.session.query(BlogPost, User.first_name, User.last_name).join(User,
+                                                                                       BlogPost.author_id == User.id).order_by(
+        BlogPost.id.desc()).paginate(page=page, per_page=per_page, error_out=False)
 
     posts_data = [{
         'post': post,
@@ -139,7 +146,9 @@ def get_blog():
 
 @app.route("/blog/post/<int:post_id>", methods=['GET', 'POST'])
 def show_post(post_id):
-    post_with_author = db.session.query(BlogPost, User.first_name, User.last_name).join(User, BlogPost.author_id == User.id).filter(BlogPost.id == post_id).first()
+    post_with_author = db.session.query(BlogPost, User.first_name, User.last_name).join(User,
+                                                                                        BlogPost.author_id == User.id).filter(
+        BlogPost.id == post_id).first()
     if not post_with_author:
         return "Post not found", 404
     post, author_first_name, author_last_name = post_with_author
@@ -365,7 +374,6 @@ def error_page():
 
 # Route to handle file uploads for CKEditor
 @app.route('/upload', methods=['POST'])
-@csrf.exempt  # Disable CSRF for this route to avoid CSRF token errors
 def upload():
     f = request.files.get('upload')
     if not f:
