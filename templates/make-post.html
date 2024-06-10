@@ -63,19 +63,20 @@
 </main>
 
 <!-- CKEditor Configuration -->
-    <script>
-        ClassicEditor
-            .create(document.querySelector('#editor'), {
-                extraPlugins: [SimpleUploadAdapter, PasteFromOffice],
-                simpleUpload: {
-                    uploadUrl: '/upload',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
+<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+<script>
+    ClassicEditor
+        .create(document.querySelector('#editor'), {
+            simpleUpload: {
+                uploadUrl: '{{ url_for('upload') }}',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    </script>
+            },
+            extraPlugins: [ 'SimpleUploadAdapter', 'PasteFromOffice' ]
+        })
+        .catch(error => {
+            console.error(error);
+        });
+</script>
 {% endblock %}
