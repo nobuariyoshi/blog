@@ -385,6 +385,7 @@ def upload():
     url = url_for('uploaded_files', filename=filename)
     return upload_success(url=url)  # Respond with the URL of the uploaded file
 
+
 @app.route('/uploads/<filename>')
 def uploaded_files(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)

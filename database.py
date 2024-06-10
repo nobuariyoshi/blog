@@ -65,7 +65,7 @@ class BlogPost(db.Model):
     title = Column(String(250), unique=True, nullable=False)
     subtitle = Column(String(250), nullable=False)
     date = Column(DateTime, default=datetime.utcnow)
-    last_edited = Column(DateTime, nullable=True)  # New field for last edited date
+    last_edited = Column(DateTime, nullable=True)
     body = Column(Text, nullable=False)
     author_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     img_url = Column(String(500), nullable=True)

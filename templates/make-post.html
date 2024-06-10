@@ -61,10 +61,12 @@
 </main>
 
 <!-- CKEditor Configuration -->
+<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
 <script>
     class MyUploadAdapter {
         constructor(loader) {
             this.loader = loader;
+            this.url = '{{ url_for("upload") }}';
         }
 
         upload() {
@@ -84,15 +86,15 @@
 
         _initRequest() {
             const xhr = this.xhr = new XMLHttpRequest();
-            xhr.open('POST', '{{ url_for("upload") }}', true);
+            xhr.open('POST', this.url, true);
             xhr.responseType = 'json';
-            xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token }}');
+            xhr.setRequestHeader('X-CSRF-TOKEN', '{{ form.csrf_token._value() }}');
         }
 
         _initListeners(resolve, reject, file) {
             const xhr = this.xhr;
             const loader = this.loader;
-            const genericErrorText = `Couldn't upload file: ${ file.name }.`;
+            const genericErrorText = `Couldn't upload file: ${file.name}.`;
 
             xhr.addEventListener('error', () => reject(genericErrorText));
             xhr.addEventListener('abort', () => reject());
@@ -133,7 +135,13 @@
 
     ClassicEditor
         .create(document.querySelector('#editor'), {
-            extraPlugins: [MyCustomUploadAdapterPlugin]
+            extraPlugins: [MyCustomUploadAdapterPlugin],
+            simpleUpload: {
+                uploadUrl: '{{ url_for("upload") }}',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ form.csrf_token._value() }}'
+                }
+            }
         })
         .catch(error => {
             console.error(error);
