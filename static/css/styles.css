@@ -308,6 +308,7 @@ svg {
   vertical-align: middle;
 }
 
+
 table {
   caption-side: bottom;
   border-collapse: collapse;
@@ -10851,4 +10852,10 @@ header.masthead .post-heading .meta a {
     text-align: left;
 }
 
+.post-content img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
 
