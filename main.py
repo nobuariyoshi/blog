@@ -11,7 +11,7 @@ from werkzeug.utils import secure_filename
 from form import ContactForm, RegisterForm, LoginForm, CreatePostForm, CommentForm
 from dotenv import load_dotenv
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from flask_ckeditor import CKEditor
+from flask_ckeditor import CKEditor, upload_success, upload_fail
 from database import User, Contact, db, DATABASE_URL, BlogPost, Comment
 from flask_migrate import Migrate
 from email.mime.text import MIMEText
@@ -374,23 +374,16 @@ def error_page():
 
 # Route to handle file uploads for CKEditor
 @app.route('/upload', methods=['POST'])
+@csrf.exempt  # This may be necessary for the upload endpoint
 def upload():
     f = request.files.get('upload')
     if not f:
-        return {
-            'uploaded': False,
-            'error': {
-                'message': 'No file uploaded'
-            }
-        }, 400  # Return 400 status code if no file is uploaded
+        return upload_fail(message='No file uploaded')  # Customizable error message
     filename = secure_filename(f.filename)
-    f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    f.save(filepath)
     url = url_for('uploaded_files', filename=filename)
-    return {
-        'uploaded': True,
-        'url': url
-    }
-
+    return upload_success(url=url)  # Respond with the URL of the uploaded file
 
 @app.route('/uploads/<filename>')
 def uploaded_files(filename):

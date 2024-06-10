@@ -29,6 +29,7 @@ Base = declarative_base()
 # Initialize SQLAlchemy with the base model
 db = SQLAlchemy(model_class=Base)
 
+
 # Models
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -40,13 +41,14 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(256))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     posts = db.relationship('BlogPost', backref='author', lazy=True)
-    comments = db.relationship('Comment', backref='comment_author', lazy=True, overlaps="user_comments,comments")  # Added overlaps
+    comments = db.relationship('Comment', backref='comment_author', lazy=True, overlaps="user_comments,comments")
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+
 
 class Contact(db.Model):
     __tablename__ = 'contacts'
@@ -55,6 +57,7 @@ class Contact(db.Model):
     email = db.Column(db.String(120), nullable=False)
     message = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 
 class BlogPost(db.Model):
     __tablename__ = 'blog_posts'
@@ -65,9 +68,11 @@ class BlogPost(db.Model):
     last_edited = Column(DateTime, nullable=True)  # New field for last edited date
     body = Column(Text, nullable=False)
     author_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    img_url = Column(String(500), nullable=False)
-    comments = relationship('Comment', backref='post_comments', lazy=True, cascade="all, delete-orphan", overlaps="comments,post_comments")  # Added overlaps
+    img_url = Column(String(500), nullable=True)
+    comments = relationship('Comment', backref='post_comments', lazy=True, cascade="all, delete-orphan",
+                            overlaps="comments,post_comments")
     draft = Column(Boolean, default=True)
+
 
 class Comment(db.Model):
     __tablename__ = 'comments'
@@ -77,5 +82,7 @@ class Comment(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id', ondelete='CASCADE'), nullable=False)
 
-    author = db.relationship('User', backref=db.backref('user_comments', lazy=True, cascade="all, delete-orphan", overlaps="comment_author,comments"))
-    post = db.relationship('BlogPost', backref=db.backref('post_comments', lazy=True, cascade="all, delete-orphan", overlaps="comments,post_comments"))  # Added overlaps
+    author = db.relationship('User', backref=db.backref('user_comments', lazy=True, cascade="all, delete-orphan",
+                                                        overlaps="comment_author,comments"))
+    post = db.relationship('BlogPost', backref=db.backref('post_comments', lazy=True, cascade="all, delete-orphan",
+                                                          overlaps="comments,post_comments"))
