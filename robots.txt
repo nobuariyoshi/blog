@@ -1,0 +1,11 @@
+User-agent: *
+Crawl-delay: 10
+Disallow: /cgi-bin/
+Disallow: /wp-admin/
+Disallow: /private-directory/
+
+User-agent: Googlebot
+Disallow:
+
+User-agent: BadBot
+Disallow: /
